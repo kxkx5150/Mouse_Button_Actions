@@ -16,7 +16,7 @@
 #define IDD_DIALOG1                     130
 #define ID_MENU_STARTMOUSEHOOK          32771
 #define ID_MENU_ENDMOUSEHOOK            32772
-#define ID_MENU_STARTUP					32774
+#define ID_MENU_STARTUP					32775
 #define IDC_STATIC                      -1
 
 // Next default values for new objects

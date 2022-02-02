@@ -19,6 +19,7 @@ HWND m_right_set_btn = nullptr;
 HWND m_x1_set_btn = nullptr;
 HWND m_x2_set_btn = nullptr;
 HWND m_lr_set_btn = nullptr;
+HWND m_rl_set_btn = nullptr;
 
 HWND g_eventedit_hwnd = nullptr;
 HWND g_event_x_hwnd = nullptr;
@@ -41,6 +42,7 @@ public:
     KeyObj m_x1_key;
     KeyObj m_x2_key;
     KeyObj m_lr_key;
+    KeyObj m_rl_key;
 
 public:
     KeyObjs()
@@ -157,19 +159,22 @@ void create_gui()
     m_x1_set_btn = create_button(g_hwnd, 32, 78, 180, 26, IDD_X1_SET_BUTTON, (TCHAR*)L"X1 Button");
     m_x2_set_btn = create_button(g_hwnd, 32, 110, 180, 26, IDD_X2_SET_BUTTON, (TCHAR*)L"X2 Button");
     m_lr_set_btn = create_button(g_hwnd, 32, 142, 180, 26, IDD_LR_SET_BUTTON, (TCHAR*)L"Left && Right Button");
+    m_rl_set_btn = create_button(g_hwnd, 32, 174, 180, 26, IDD_RL_SET_BUTTON, (TCHAR*)L"Right && Left Button");
+    //ShowWindow(m_rl_set_btn, SW_HIDE);
 
-    g_eventedit_hwnd = create_edittext(g_hwnd, 4, 204, 240, 21, 0);
-    g_event_x_hwnd = create_edittext(g_hwnd, 4, 224, 100, 21, 0);
-    g_event_y_hwnd = create_edittext(g_hwnd, 4, 244, 100, 21, 0);
-    g_event_data_hwnd = create_edittext(g_hwnd, 4, 264, 100, 21, 0);
-    g_event_flg_hwnd = create_edittext(g_hwnd, 4, 284, 100, 21, 0);
-    g_event_time_hwnd = create_edittext(g_hwnd, 4, 304, 100, 21, 0);
+    g_eventedit_hwnd = create_edittext(g_hwnd, 4, 214, 240, 21, 0);
+    g_event_x_hwnd = create_edittext(g_hwnd, 4, 234, 100, 21, 0);
+    g_event_y_hwnd = create_edittext(g_hwnd, 4, 254, 100, 21, 0);
+    g_event_data_hwnd = create_edittext(g_hwnd, 4, 274, 100, 21, 0);
+    g_event_flg_hwnd = create_edittext(g_hwnd, 4, 294, 100, 21, 0);
+    g_event_time_hwnd = create_edittext(g_hwnd, 4, 314, 100, 21, 0);
 
     SendMessage(m_middle_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
     SendMessage(m_right_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
     SendMessage(m_x1_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
     SendMessage(m_x2_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
     SendMessage(m_lr_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
+    SendMessage(m_rl_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
 
     SendMessage(g_eventedit_hwnd, WM_SETFONT, (WPARAM)m_hFont, MAKELPARAM(FALSE, 0));
     SendMessage(g_event_x_hwnd, WM_SETFONT, (WPARAM)m_hFont, MAKELPARAM(FALSE, 0));
@@ -178,6 +183,7 @@ void create_gui()
     SendMessage(g_event_flg_hwnd, WM_SETFONT, (WPARAM)m_hFont, MAKELPARAM(FALSE, 0));
     SendMessage(g_event_time_hwnd, WM_SETFONT, (WPARAM)m_hFont, MAKELPARAM(FALSE, 0));
 }
+
 void show_event(UINT message, WPARAM wParam, LPMSLLHOOKSTRUCT mousell)
 {
 
@@ -242,6 +248,8 @@ void show_event(UINT message, WPARAM wParam, LPMSLLHOOKSTRUCT mousell)
         SetWindowText(g_eventedit_hwnd, L"WM_NCMOUSEMOVE");
     }
 }
+
+
 void create_trayicon(HWND hWnd)
 {
     g_nid.cbSize = (DWORD)sizeof(NOTIFYICONDATA);
@@ -289,6 +297,10 @@ void create_option_control(HWND hDlg)
 
     } else if (active_button_id == IDD_LR_SET_BUTTON) {
         keyobj = keyobjs->m_lr_key;
+
+    } else if (active_button_id == IDD_RL_SET_BUTTON) {
+        keyobj = keyobjs->m_rl_key;
+
     }
 
     HWND keylisthwnd = CreateWindow(
@@ -298,16 +310,46 @@ void create_option_control(HWND hDlg)
         hDlg, (HMENU)IDD_STR_SET_COMBOBOX, hInst, NULL);
     TCHAR i;
     int selidx = 0;
-    for (i = L'z'; L'a' <= i; i--) {
+    int itemcnt = 0;
+
+    for (i = 0x30; i <= 0x39; i++) {
+        itemcnt++;
         std::wstring aaa = &i;
         aaa[1] = L'\0';
-        SendMessage(keylisthwnd, CB_INSERTSTRING, 0, (LPARAM)aaa.c_str());
+        SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)aaa.c_str());
         if (i == keyobj.keycode) {
-            selidx = i - 96;
+            selidx = itemcnt;
         }
     }
+    for (i = 0x41; i <= 0x5A; i++) {
+        itemcnt++;
+        std::wstring aaa = &i;
+        aaa[1] = L'\0';
+        SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)aaa.c_str());
+        if (i == keyobj.keycode) {
+            selidx = itemcnt;
+        }
+    }
+
+    SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"LEFT");
+    SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"UP");
+    SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"RIGHT");
+    SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"DOWN");
+
     SendMessage(keylisthwnd, CB_INSERTSTRING, 0, (LPARAM)L"");
+
+    if (keyobj.keycode == 0x25) {
+        selidx = itemcnt + 1;
+    } else if (keyobj.keycode == 0x26) {
+        selidx = itemcnt + 2;
+    } else if (keyobj.keycode == 0x27) {
+        selidx = itemcnt + 3;
+    } else if (keyobj.keycode == 0x28) {
+        selidx = itemcnt + 4;
+    }
+
     SendMessage(keylisthwnd, CB_SETCURSEL, selidx, 0);
+
 
     HWND ctrlhwnd = create_combobox(hDlg, 28, 55, 150, 100, IDD_CTRL_SET_COMBOBOX);
     SendMessage(ctrlhwnd, CB_INSERTSTRING, 0, (LPARAM)L"CTRL");
@@ -420,6 +462,10 @@ void send_key_option(int keyobjid, int index, int keycode, bool ctrl, bool alt, 
 
     } else if (keyobjid == IDD_LR_SET_BUTTON) {
         set_mouse_lr_button(0, keycode, ctrl, alt, shift);
+
+    } else if (keyobjid == IDD_RL_SET_BUTTON) {
+        set_mouse_rl_button(0, keycode, ctrl, alt, shift);
+
     }
 }
 void set_option_obj(int keyobjid, int keycode, bool ctrl, bool alt, bool shift)
@@ -458,6 +504,14 @@ void set_option_obj(int keyobjid, int keycode, bool ctrl, bool alt, bool shift)
         keyobjs->m_lr_key.alt = alt;
         keyobjs->m_lr_key.shift = shift;
         send_key_option(keyobjid, 0, keycode, ctrl, alt, shift);
+
+    } else if (keyobjid == IDD_RL_SET_BUTTON) {
+        keyobjs->m_rl_key.keycode = keycode;
+        keyobjs->m_rl_key.ctrl = ctrl;
+        keyobjs->m_rl_key.alt = alt;
+        keyobjs->m_rl_key.shift = shift;
+        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift);
+
     }
 }
 void store_key(HWND hDlg)
@@ -477,9 +531,22 @@ void store_key(HWND hDlg)
     GetWindowText(shifthwnd, shifttxt, 10);
 
     int regval = 0;
+
     UINT keycode = 0;
     if (keytxt != L"") {
-        keycode = *keytxt;
+        std::wstring keystr = keytxt;
+
+        if (keystr.find(L"UP") == 0) {
+            keycode = 0x26;
+        } else if (keystr.find(L"DOWN") == 0) {
+            keycode = 0x28;
+        } else if (keystr.find(L"LEFT") == 0) {
+            keycode = 0x25;
+        } else if (keystr.find(L"RIGHT") == 0) {
+            keycode = 0x27;
+        }else{
+            keycode = *keytxt;
+        }
         regval = 1000 * keycode;
     }
 
@@ -564,6 +631,7 @@ void get_options()
     load_key(IDD_X1_SET_BUTTON);
     load_key(IDD_X2_SET_BUTTON);
     load_key(IDD_LR_SET_BUTTON);
+    load_key(IDD_RL_SET_BUTTON);
     OutputDebugString(L"");
 }
 INT_PTR CALLBACK set_dialog_proc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
@@ -613,6 +681,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         case IDD_X1_SET_BUTTON:
         case IDD_X2_SET_BUTTON:
         case IDD_LR_SET_BUTTON:
+        case IDD_RL_SET_BUTTON:
             active_button_id = wmId;
             DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, set_dialog_proc);
             break;

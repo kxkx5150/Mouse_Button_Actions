@@ -110,6 +110,7 @@ class KeyOptions {
     Keyobj* m_x1tbutton = nullptr;
     Keyobj* m_x2tbutton = nullptr;
     Keyobj* m_lrtbutton = nullptr;
+    Keyobj* m_rltbutton = nullptr;
 
 public:
     KeyOptions()
@@ -120,6 +121,7 @@ public:
         m_x1tbutton = new Keyobj();
         m_x2tbutton = new Keyobj();
         m_lrtbutton = new Keyobj();
+        m_rltbutton = new Keyobj();
     }
 
     ~KeyOptions()
@@ -130,32 +132,38 @@ public:
         delete m_x1tbutton;
         delete m_x2tbutton;
         delete m_lrtbutton;
+        delete m_rltbutton;
     }
 
     void set_mouse_left_button(int index, int keycode, bool ctrl, bool alt, bool shift)
     {
-        //m_leftbutton->set_key(index, keycode - 32, ctrl, alt, shift);
+        //m_leftbutton->set_key(index, keycode , ctrl, alt, shift);
     }
     void set_mouse_middle_button(int index, int keycode, bool ctrl, bool alt, bool shift)
     {
-        m_middlebutton->set_key(index, keycode - 32, ctrl, alt, shift);
+        m_middlebutton->set_key(index, keycode, ctrl, alt, shift);
     }
     void set_mouse_right_button(int index, int keycode, bool ctrl, bool alt, bool shift)
     {
-        m_rightbutton->set_key(index, keycode - 32, ctrl, alt, shift);
+        m_rightbutton->set_key(index, keycode, ctrl, alt, shift);
     }
     void set_mouse_x1_button(int index, int keycode, bool ctrl, bool alt, bool shift)
     {
-        m_x1tbutton->set_key(index, keycode - 32, ctrl, alt, shift);
+        m_x1tbutton->set_key(index, keycode, ctrl, alt, shift);
     }
     void set_mouse_x2_button(int index, int keycode, bool ctrl, bool alt, bool shift)
     {
-        m_x2tbutton->set_key(index, keycode - 32, ctrl, alt, shift);
+        m_x2tbutton->set_key(index, keycode, ctrl, alt, shift);
     }
     void set_mouse_lr_button(int index, int keycode, bool ctrl, bool alt, bool shift)
     {
-        m_lrtbutton->set_key(index, keycode - 32, ctrl, alt, shift);
+        m_lrtbutton->set_key(index, keycode, ctrl, alt, shift);
     }
+    void set_mouse_rl_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+    {
+        m_rltbutton->set_key(index, keycode, ctrl, alt, shift);
+    }
+
     Keyobj* get_mouse_left_button()
     {
         return m_leftbutton;
@@ -180,6 +188,10 @@ public:
     {
         return m_lrtbutton;
     }
+    Keyobj* get_mouse_rl_button()
+    {
+        return m_rltbutton;
+    }
 
 private:
 };
@@ -196,7 +208,14 @@ bool capwheel = false;
 bool capmove = false;
 
 bool mouse_lbutton_hold = false;
-bool mouse_cntextmenu_cancel = false;
+bool mouse_rbutton_hold = false;
+
+bool mouse_x_upevent_cancel = false;
+bool mouse_r_upevent_cancel = false;
+bool mouse_m_upevent_cancel = false;
+bool mouse_l_upevent_cancel = false;
+
+bool mouse_rl_cancel = false;
 
 LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam);
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
@@ -265,14 +284,21 @@ void __cdecl set_mouse_lr_button(int index, int keycode, bool ctrl, bool alt, bo
     if (g_keyopts)
         g_keyopts->set_mouse_lr_button(index, keycode, ctrl, alt, shift);
 }
+void __cdecl set_mouse_rl_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+{
+    if (g_keyopts)
+        g_keyopts->set_mouse_rl_button(index, keycode, ctrl, alt, shift);
+}
 
-bool click_xbutton(int state, WPARAM wParam, LPARAM lParam)
+int click_xbutton(int state, WPARAM wParam, LPARAM lParam)
 {
     MSLLHOOKSTRUCT* pmsllhook = (MSLLHOOKSTRUCT*)lParam;
     switch (HIWORD(pmsllhook->mouseData)) {
     case XBUTTON1: {
         Keyobj* kobj = g_keyopts->get_mouse_x1_button();
-        return kobj->send_key(lParam);
+        int rval = kobj->send_key(lParam);
+
+        return rval;
     } break;
 
     case XBUTTON2: {
@@ -295,14 +321,29 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
     if (caplbtn && (WM_LBUTTONDBLCLK == wParam || WM_NCLBUTTONDBLCLK == wParam)) {
         enable = true;
         mouse_lbutton_hold = false;
-        mouse_cntextmenu_cancel = false;
     } else if (caplbtn && (WM_LBUTTONDOWN == wParam || WM_NCLBUTTONDOWN == wParam)) {
-        enable = true;
-        mouse_lbutton_hold = true;
-        mouse_cntextmenu_cancel = false;
+        if (mouse_rbutton_hold) {
+            mouse_rbutton_hold = false;
+            Keyobj* kobj = g_keyopts->get_mouse_rl_button();
+            rval = kobj->send_key(lParam);
+        } else {
+            enable = true;
+            mouse_lbutton_hold = true;
+        }
+        if (rval == 1) {
+            mouse_rl_cancel = true;
+            mouse_l_upevent_cancel = true;
+        } else {
+            mouse_rl_cancel = false;
+            mouse_l_upevent_cancel = false;
+        }
     } else if (caplbtn && (WM_LBUTTONUP == wParam || WM_NCLBUTTONUP == wParam)) {
         enable = true;
         mouse_lbutton_hold = false;
+        if (mouse_l_upevent_cancel) {
+            mouse_l_upevent_cancel = false;
+            rval = 1;
+        }
 
     } else if (capmbtn && (WM_MBUTTONDBLCLK == wParam || WM_NCMBUTTONDBLCLK == wParam)) {
         enable = true;
@@ -310,46 +351,71 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
         enable = true;
         Keyobj* kobj = g_keyopts->get_mouse_middle_button();
         rval = kobj->send_key(lParam);
-
+        if (rval == 1) {
+            mouse_m_upevent_cancel = true;
+        } else {
+            mouse_m_upevent_cancel = false;
+        }
     } else if (capmbtn && (WM_MBUTTONUP == wParam || WM_NCMBUTTONUP == wParam)) {
         enable = true;
+        if (mouse_m_upevent_cancel) {
+            mouse_m_upevent_cancel = false;
+            rval = 1;
+        }
 
     } else if (caprbtn && (WM_RBUTTONDBLCLK == wParam || WM_NCRBUTTONDBLCLK == wParam)) {
         enable = true;
-
+        mouse_rbutton_hold = false;
     } else if (caprbtn && (WM_RBUTTONDOWN == wParam || WM_NCRBUTTONDOWN == wParam)) {
         enable = true;
         if (mouse_lbutton_hold) {
             mouse_lbutton_hold = false;
-            mouse_cntextmenu_cancel = true;
             Keyobj* kobj = g_keyopts->get_mouse_lr_button();
             rval = kobj->send_key(lParam);
         } else {
+            mouse_rbutton_hold = true;
             Keyobj* kobj = g_keyopts->get_mouse_right_button();
             rval = kobj->send_key(lParam);
         }
-
+        if (rval == 1) {
+            mouse_r_upevent_cancel = true;
+        } else {
+            mouse_r_upevent_cancel = false;
+        }
     } else if (caprbtn && (WM_RBUTTONUP == wParam || WM_NCRBUTTONUP == wParam)) {
         enable = true;
-        if (mouse_cntextmenu_cancel) {
-            mouse_cntextmenu_cancel = false;
+        if (mouse_r_upevent_cancel) {
+            mouse_r_upevent_cancel = false;
             rval = 1;
         }
+        mouse_rbutton_hold = false;
+        if (mouse_rl_cancel) {
+            mouse_rl_cancel = false;
+            //rval = 1;
+            //PostMessage(((HWND)0xffff), wParam, 0, 0);
+        }
+
     } else if (capxbtn && (WM_XBUTTONDBLCLK == wParam || WM_NCXBUTTONDBLCLK == wParam)) {
         enable = true;
-
     } else if (capxbtn && (WM_XBUTTONDOWN == wParam || WM_NCXBUTTONDOWN == wParam)) {
         enable = true;
         rval = click_xbutton(WM_XBUTTONDOWN, wParam, lParam);
-
+        if (rval == 1) {
+            mouse_x_upevent_cancel = true;
+        } else {
+            mouse_x_upevent_cancel = false;
+        }
     } else if (capxbtn && (WM_XBUTTONUP == wParam || WM_NCXBUTTONUP == wParam)) {
         enable = true;
+        if (mouse_x_upevent_cancel) {
+            mouse_x_upevent_cancel = false;
+            rval = 1;
+        }
 
     } else if (capwheel && WM_MOUSEHWHEEL == wParam) {
         enable = true;
     } else if (capwheel && WM_MOUSEWHEEL == wParam) {
         enable = true;
-
     } else if (capmove && WM_MOUSEMOVE == wParam) {
         enable = true;
     } else if (capmove && WM_NCMOUSEMOVE == wParam) {
