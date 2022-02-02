@@ -42,10 +42,15 @@ public:
     {
         if (!enable)
             return 0;
+        if (m_keys.size() < 1)
+            return 0;
+
         INPUT ip;
 
         for (int i = 0; i < m_keys.size(); i++) {
             Key key = m_keys[i];
+            if (key.keycode == 0)
+                return 0;
 
             /// Keyboard
             ip.type = INPUT_KEYBOARD;
