@@ -33,3 +33,10 @@ Right & Left    = None
 MIddle & Left   = Left + Alt  (History back) 
 MIddle & Right  = Right + Alt (History forward) 
 </pre>
+
+<br><br>
+
+
+![kkkk](https://user-images.githubusercontent.com/10168979/152359255-bd860cee-8ec1-4ebe-a002-417e9ad4f8f8.PNG)
+
+![k](https://user-images.githubusercontent.com/10168979/152359274-16ea85ba-2afc-4722-8e95-aec3657ff4e1.PNG)
