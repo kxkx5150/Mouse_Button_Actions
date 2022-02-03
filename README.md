@@ -1,4 +1,4 @@
-# Mouse_Button_Actions
+# Mouse Button Actions
 
 <br>
 
@@ -6,8 +6,30 @@ Win32 API
 C++  
 Mouse Global Hook Sample  
 
+<br><br><br>
 
-![aaa](https://user-images.githubusercontent.com/10168979/152115609-bf45cf6a-630a-4999-bd26-69e72d75ee32.PNG)
+MIddle Button  
+Right Button  
+X1 Button  
+X2 Button  
+Left & Right Button  
+Right & Left Button  
+MIddle & Left Button  
+MIddle & Right Button  
 
+<br><br>
 
-![キャプチャ](https://user-images.githubusercontent.com/10168979/152115624-05228a54-88d6-4862-ac76-8922e524af72.PNG)
+## Recommended settings
+
+<br>
+
+<pre>
+MIddle          = Default   
+Right           = Default   
+X1              = Default
+X2              = Default
+Left & Right    = Ctrl + W    (Close tab)
+Right & Left    = None 
+MIddle & Left   = Left + Alt  (History back) 
+MIddle & Right  = Right + Alt (History forward) 
+</pre>

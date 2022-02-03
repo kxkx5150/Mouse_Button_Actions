@@ -20,6 +20,8 @@ HWND m_x1_set_btn = nullptr;
 HWND m_x2_set_btn = nullptr;
 HWND m_lr_set_btn = nullptr;
 HWND m_rl_set_btn = nullptr;
+HWND m_ml_set_btn = nullptr;
+HWND m_mr_set_btn = nullptr;
 
 HWND g_eventedit_hwnd = nullptr;
 HWND g_event_x_hwnd = nullptr;
@@ -43,6 +45,8 @@ public:
     KeyObj m_x2_key;
     KeyObj m_lr_key;
     KeyObj m_rl_key;
+    KeyObj m_ml_key;
+    KeyObj m_mr_key;
 
 public:
     KeyObjs()
@@ -115,7 +119,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
     hInst = hInstance;
     g_hwnd = CreateWindowW(szWindowClass, L"", WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX,
-        CW_USEDEFAULT, 0, 264, 400, nullptr, nullptr, hInstance, nullptr);
+        CW_USEDEFAULT, 0, 264, 500, nullptr, nullptr, hInstance, nullptr);
     if (!g_hwnd) {
         return FALSE;
     }
@@ -161,13 +165,15 @@ void create_gui()
     m_lr_set_btn = create_button(g_hwnd, 32, 142, 180, 26, IDD_LR_SET_BUTTON, (TCHAR*)L"Left && Right Button");
     m_rl_set_btn = create_button(g_hwnd, 32, 174, 180, 26, IDD_RL_SET_BUTTON, (TCHAR*)L"Right && Left Button");
     //ShowWindow(m_rl_set_btn, SW_HIDE);
+    m_ml_set_btn = create_button(g_hwnd, 32, 206, 180, 26, IDD_ML_SET_BUTTON, (TCHAR*)L"MIddle && Left Button");
+    m_mr_set_btn = create_button(g_hwnd, 32, 238, 180, 26, IDD_MR_SET_BUTTON, (TCHAR*)L"MIddle && Right Button");
 
-    g_eventedit_hwnd = create_edittext(g_hwnd, 4, 214, 240, 21, 0);
-    g_event_x_hwnd = create_edittext(g_hwnd, 4, 234, 100, 21, 0);
-    g_event_y_hwnd = create_edittext(g_hwnd, 4, 254, 100, 21, 0);
-    g_event_data_hwnd = create_edittext(g_hwnd, 4, 274, 100, 21, 0);
-    g_event_flg_hwnd = create_edittext(g_hwnd, 4, 294, 100, 21, 0);
-    g_event_time_hwnd = create_edittext(g_hwnd, 4, 314, 100, 21, 0);
+    g_eventedit_hwnd = create_edittext(g_hwnd, 4, 314, 240, 21, 0);
+    g_event_x_hwnd = create_edittext(g_hwnd, 4, 334, 100, 21, 0);
+    g_event_y_hwnd = create_edittext(g_hwnd, 4, 354, 100, 21, 0);
+    g_event_data_hwnd = create_edittext(g_hwnd, 4, 374, 100, 21, 0);
+    g_event_flg_hwnd = create_edittext(g_hwnd, 4, 394, 100, 21, 0);
+    g_event_time_hwnd = create_edittext(g_hwnd, 4, 414, 100, 21, 0);
 
     SendMessage(m_middle_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
     SendMessage(m_right_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
@@ -175,6 +181,8 @@ void create_gui()
     SendMessage(m_x2_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
     SendMessage(m_lr_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
     SendMessage(m_rl_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
+    SendMessage(m_ml_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
+    SendMessage(m_mr_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
 
     SendMessage(g_eventedit_hwnd, WM_SETFONT, (WPARAM)m_hFont, MAKELPARAM(FALSE, 0));
     SendMessage(g_event_x_hwnd, WM_SETFONT, (WPARAM)m_hFont, MAKELPARAM(FALSE, 0));
@@ -249,7 +257,6 @@ void show_event(UINT message, WPARAM wParam, LPMSLLHOOKSTRUCT mousell)
     }
 }
 
-
 void create_trayicon(HWND hWnd)
 {
     g_nid.cbSize = (DWORD)sizeof(NOTIFYICONDATA);
@@ -300,7 +307,10 @@ void create_option_control(HWND hDlg)
 
     } else if (active_button_id == IDD_RL_SET_BUTTON) {
         keyobj = keyobjs->m_rl_key;
-
+    } else if (active_button_id == IDD_ML_SET_BUTTON) {
+        keyobj = keyobjs->m_ml_key;
+    } else if (active_button_id == IDD_MR_SET_BUTTON) {
+        keyobj = keyobjs->m_mr_key;
     }
 
     HWND keylisthwnd = CreateWindow(
@@ -349,7 +359,6 @@ void create_option_control(HWND hDlg)
     }
 
     SendMessage(keylisthwnd, CB_SETCURSEL, selidx, 0);
-
 
     HWND ctrlhwnd = create_combobox(hDlg, 28, 55, 150, 100, IDD_CTRL_SET_COMBOBOX);
     SendMessage(ctrlhwnd, CB_INSERTSTRING, 0, (LPARAM)L"CTRL");
@@ -465,7 +474,10 @@ void send_key_option(int keyobjid, int index, int keycode, bool ctrl, bool alt, 
 
     } else if (keyobjid == IDD_RL_SET_BUTTON) {
         set_mouse_rl_button(0, keycode, ctrl, alt, shift);
-
+    } else if (keyobjid == IDD_ML_SET_BUTTON) {
+        set_mouse_ml_button(0, keycode, ctrl, alt, shift);
+    } else if (keyobjid == IDD_MR_SET_BUTTON) {
+        set_mouse_mr_button(0, keycode, ctrl, alt, shift);
     }
 }
 void set_option_obj(int keyobjid, int keycode, bool ctrl, bool alt, bool shift)
@@ -512,6 +524,19 @@ void set_option_obj(int keyobjid, int keycode, bool ctrl, bool alt, bool shift)
         keyobjs->m_rl_key.shift = shift;
         send_key_option(keyobjid, 0, keycode, ctrl, alt, shift);
 
+    } else if (keyobjid == IDD_ML_SET_BUTTON) {
+        keyobjs->m_ml_key.keycode = keycode;
+        keyobjs->m_ml_key.ctrl = ctrl;
+        keyobjs->m_ml_key.alt = alt;
+        keyobjs->m_ml_key.shift = shift;
+        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift);
+
+    } else if (keyobjid == IDD_MR_SET_BUTTON) {
+        keyobjs->m_mr_key.keycode = keycode;
+        keyobjs->m_mr_key.ctrl = ctrl;
+        keyobjs->m_mr_key.alt = alt;
+        keyobjs->m_mr_key.shift = shift;
+        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift);
     }
 }
 void store_key(HWND hDlg)
@@ -544,7 +569,7 @@ void store_key(HWND hDlg)
             keycode = 0x25;
         } else if (keystr.find(L"RIGHT") == 0) {
             keycode = 0x27;
-        }else{
+        } else {
             keycode = *keytxt;
         }
         regval = 1000 * keycode;
@@ -632,7 +657,8 @@ void get_options()
     load_key(IDD_X2_SET_BUTTON);
     load_key(IDD_LR_SET_BUTTON);
     load_key(IDD_RL_SET_BUTTON);
-    OutputDebugString(L"");
+    load_key(IDD_ML_SET_BUTTON);
+    load_key(IDD_MR_SET_BUTTON);
 }
 INT_PTR CALLBACK set_dialog_proc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -682,6 +708,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         case IDD_X2_SET_BUTTON:
         case IDD_LR_SET_BUTTON:
         case IDD_RL_SET_BUTTON:
+        case IDD_ML_SET_BUTTON:
+        case IDD_MR_SET_BUTTON:
             active_button_id = wmId;
             DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, set_dialog_proc);
             break;

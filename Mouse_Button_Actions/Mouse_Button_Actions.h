@@ -8,6 +8,8 @@
 #define IDD_X2_SET_BUTTON (WM_APP + 4)
 #define IDD_LR_SET_BUTTON (WM_APP + 5)
 #define IDD_RL_SET_BUTTON (WM_APP + 6)
+#define IDD_ML_SET_BUTTON (WM_APP + 7)
+#define IDD_MR_SET_BUTTON (WM_APP + 8)
 
 #define IDD_SET_OKBUTTON (WM_APP + 10)
 #define IDD_SET_CANCELBUTTON (WM_APP + 11)
