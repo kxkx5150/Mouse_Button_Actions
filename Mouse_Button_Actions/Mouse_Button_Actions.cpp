@@ -345,6 +345,14 @@ void create_option_control(HWND hDlg)
     SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"UP");
     SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"RIGHT");
     SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"DOWN");
+    SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"END");
+    SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"HOME");
+    SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"BACK");
+    SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"TAB");
+    SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"SPACE");
+    SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"PAGEUP");
+    SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"PAGEDOWN");
+    SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"NONE");
 
     SendMessage(keylisthwnd, CB_INSERTSTRING, 0, (LPARAM)L"");
 
@@ -356,6 +364,22 @@ void create_option_control(HWND hDlg)
         selidx = itemcnt + 3;
     } else if (keyobj.keycode == 0x28) {
         selidx = itemcnt + 4;
+    } else if (keyobj.keycode == 0x23) {
+        selidx = itemcnt + 5;
+    } else if (keyobj.keycode == 0x24) {
+        selidx = itemcnt + 6;
+    } else if (keyobj.keycode == 0x08) {
+        selidx = itemcnt + 7;
+    } else if (keyobj.keycode == 0x09) {
+        selidx = itemcnt + 8;
+    } else if (keyobj.keycode == 0x20) {
+        selidx = itemcnt + 9;
+    } else if (keyobj.keycode == 0x21) {
+        selidx = itemcnt + 10;
+    } else if (keyobj.keycode == 0x22) {
+        selidx = itemcnt + 11;
+    } else if (keyobj.keycode == 1) {
+        selidx = itemcnt + 12;
     }
 
     SendMessage(keylisthwnd, CB_SETCURSEL, selidx, 0);
@@ -569,6 +593,24 @@ void store_key(HWND hDlg)
             keycode = 0x25;
         } else if (keystr.find(L"RIGHT") == 0) {
             keycode = 0x27;
+        } else if (keystr.find(L"END") == 0) {
+            keycode = 0x23;
+        } else if (keystr.find(L"HOME") == 0) {
+            keycode = 0x24;
+        } else if (keystr.find(L"BACK") == 0) {
+            keycode = 0x08;
+        } else if (keystr.find(L"TAB") == 0) {
+            keycode = 0x09;
+        } else if (keystr.find(L"SPACE") == 0) {
+            keycode = 0x20;
+        } else if (keystr.find(L"PAGEUP") == 0) {
+            keycode = 0x21;
+        } else if (keystr.find(L"PAGEDOWN") == 0) {
+            keycode = 0x22;
+        } else if (keystr.find(L"NONE") == 0) {
+            keycode = 1;
+
+
         } else {
             keycode = *keytxt;
         }
