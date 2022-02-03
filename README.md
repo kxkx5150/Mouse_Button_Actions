@@ -24,12 +24,12 @@ MIddle & Right Button
 <br>
 
 <pre>
-MIddle          = Default   
+MIddle          = None   
 Right           = Default   
 X1              = Default
 X2              = Default
 Left & Right    = Ctrl + W    (Close tab)
-Right & Left    = None 
+Right & Left    = Ctrl + Home (Go to the top of the page)
 MIddle & Left   = Left + Alt  (History back) 
 MIddle & Right  = Right + Alt (History forward) 
 </pre>
