@@ -22,6 +22,7 @@ HWND m_lr_set_btn = nullptr;
 HWND m_rl_set_btn = nullptr;
 HWND m_ml_set_btn = nullptr;
 HWND m_mr_set_btn = nullptr;
+HWND m_lm_set_btn = nullptr;
 
 HWND g_eventedit_hwnd = nullptr;
 HWND g_event_x_hwnd = nullptr;
@@ -47,6 +48,7 @@ public:
     KeyObj m_rl_key;
     KeyObj m_ml_key;
     KeyObj m_mr_key;
+    KeyObj m_lm_key;
 
 public:
     KeyObjs()
@@ -167,6 +169,8 @@ void create_gui()
     //ShowWindow(m_rl_set_btn, SW_HIDE);
     m_ml_set_btn = create_button(g_hwnd, 32, 206, 180, 26, IDD_ML_SET_BUTTON, (TCHAR*)L"MIddle && Left Button");
     m_mr_set_btn = create_button(g_hwnd, 32, 238, 180, 26, IDD_MR_SET_BUTTON, (TCHAR*)L"MIddle && Right Button");
+    m_lm_set_btn = create_button(g_hwnd, 32, 270, 180, 26, IDD_LM_SET_BUTTON, (TCHAR*)L"Left && MIddle Button");
+
 
     g_eventedit_hwnd = create_edittext(g_hwnd, 4, 314, 240, 21, 0);
     g_event_x_hwnd = create_edittext(g_hwnd, 4, 334, 100, 21, 0);
@@ -183,6 +187,7 @@ void create_gui()
     SendMessage(m_rl_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
     SendMessage(m_ml_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
     SendMessage(m_mr_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
+    SendMessage(m_lm_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
 
     SendMessage(g_eventedit_hwnd, WM_SETFONT, (WPARAM)m_hFont, MAKELPARAM(FALSE, 0));
     SendMessage(g_event_x_hwnd, WM_SETFONT, (WPARAM)m_hFont, MAKELPARAM(FALSE, 0));
@@ -311,6 +316,8 @@ void create_option_control(HWND hDlg)
         keyobj = keyobjs->m_ml_key;
     } else if (active_button_id == IDD_MR_SET_BUTTON) {
         keyobj = keyobjs->m_mr_key;
+    } else if (active_button_id == IDD_LM_SET_BUTTON) {
+        keyobj = keyobjs->m_lm_key;
     }
 
     HWND keylisthwnd = CreateWindow(
@@ -502,6 +509,10 @@ void send_key_option(int keyobjid, int index, int keycode, bool ctrl, bool alt, 
         set_mouse_ml_button(0, keycode, ctrl, alt, shift);
     } else if (keyobjid == IDD_MR_SET_BUTTON) {
         set_mouse_mr_button(0, keycode, ctrl, alt, shift);
+    } else if (keyobjid == IDD_LM_SET_BUTTON) {
+        set_mouse_lm_button(0, keycode, ctrl, alt, shift);
+
+
     }
 }
 void set_option_obj(int keyobjid, int keycode, bool ctrl, bool alt, bool shift)
@@ -560,6 +571,12 @@ void set_option_obj(int keyobjid, int keycode, bool ctrl, bool alt, bool shift)
         keyobjs->m_mr_key.ctrl = ctrl;
         keyobjs->m_mr_key.alt = alt;
         keyobjs->m_mr_key.shift = shift;
+        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift);
+    } else if (keyobjid == IDD_LM_SET_BUTTON) {
+        keyobjs->m_lm_key.keycode = keycode;
+        keyobjs->m_lm_key.ctrl = ctrl;
+        keyobjs->m_lm_key.alt = alt;
+        keyobjs->m_lm_key.shift = shift;
         send_key_option(keyobjid, 0, keycode, ctrl, alt, shift);
     }
 }
@@ -701,6 +718,7 @@ void get_options()
     load_key(IDD_RL_SET_BUTTON);
     load_key(IDD_ML_SET_BUTTON);
     load_key(IDD_MR_SET_BUTTON);
+    load_key(IDD_LM_SET_BUTTON);
 }
 INT_PTR CALLBACK set_dialog_proc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -752,6 +770,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         case IDD_RL_SET_BUTTON:
         case IDD_ML_SET_BUTTON:
         case IDD_MR_SET_BUTTON:
+        case IDD_LM_SET_BUTTON:
             active_button_id = wmId;
             DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, set_dialog_proc);
             break;

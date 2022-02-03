@@ -121,6 +121,7 @@ class KeyOptions {
     Keyobj* m_rltbutton = nullptr;
     Keyobj* m_mltbutton = nullptr;
     Keyobj* m_mrtbutton = nullptr;
+    Keyobj* m_lmtbutton = nullptr;
 
 public:
     KeyOptions()
@@ -134,6 +135,7 @@ public:
         m_rltbutton = new Keyobj();
         m_mltbutton = new Keyobj();
         m_mrtbutton = new Keyobj();
+        m_lmtbutton = new Keyobj();
     }
 
     ~KeyOptions()
@@ -147,6 +149,7 @@ public:
         delete m_rltbutton;
         delete m_mltbutton;
         delete m_mrtbutton;
+        delete m_lmtbutton;
     }
 
     void set_mouse_left_button(int index, int keycode, bool ctrl, bool alt, bool shift)
@@ -185,6 +188,10 @@ public:
     {
         m_mrtbutton->set_key(index, keycode, ctrl, alt, shift);
     }
+    void set_mouse_lm_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+    {
+        m_lmtbutton->set_key(index, keycode, ctrl, alt, shift);
+    }
 
     Keyobj* get_mouse_left_button()
     {
@@ -221,6 +228,10 @@ public:
     Keyobj* get_mouse_mr_button()
     {
         return m_mrtbutton;
+    }
+    Keyobj* get_mouse_lm_button()
+    {
+        return m_lmtbutton;
     }
 
 private:
@@ -329,6 +340,11 @@ void __cdecl set_mouse_mr_button(int index, int keycode, bool ctrl, bool alt, bo
     if (g_keyopts)
         g_keyopts->set_mouse_mr_button(index, keycode, ctrl, alt, shift);
 }
+void __cdecl set_mouse_lm_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+{
+    if (g_keyopts)
+        g_keyopts->set_mouse_lm_button(index, keycode, ctrl, alt, shift);
+}
 
 int click_xbutton(int state, WPARAM wParam, LPARAM lParam)
 {
@@ -359,10 +375,6 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
 
     bool enable = false;
 
-
-
-
-
     if (caplbtn && (WM_LBUTTONDBLCLK == wParam || WM_NCLBUTTONDBLCLK == wParam)) {
         enable = true;
         mouse_lbutton_hold = false;
@@ -373,11 +385,11 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
         if (mouse_rbutton_hold) {
             Keyobj* kobj = g_keyopts->get_mouse_rl_button();
             rval = kobj->send_key(lParam);
-        }  
+        }
         if (mouse_mbutton_hold) {
             Keyobj* kobj = g_keyopts->get_mouse_ml_button();
             int rval2 = kobj->send_key(lParam);
-            if(rval || rval2)
+            if (rval || rval2)
                 rval = true;
         }
 
@@ -394,11 +406,6 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
         mouse_lbutton_hold = false;
         mouse_l_upevent_cancel = false;
 
-
-
-
-
-
     } else if (capmbtn && (WM_MBUTTONDBLCLK == wParam || WM_NCMBUTTONDBLCLK == wParam)) {
         enable = true;
         mouse_mbutton_hold = false;
@@ -408,6 +415,14 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
 
         Keyobj* kobj = g_keyopts->get_mouse_middle_button();
         rval = kobj->send_key(lParam);
+
+        if (mouse_lbutton_hold) {
+            Keyobj* kobj = g_keyopts->get_mouse_lm_button();
+            int rval2 = kobj->send_key(lParam);
+            if (rval || rval2)
+                rval = true;
+        }
+
         if (rval == 1) {
             mouse_m_upevent_cancel = true;
         } else {
@@ -420,13 +435,6 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
         }
         mouse_m_upevent_cancel = false;
         mouse_mbutton_hold = false;
-
-
-
-
-
-
-
 
     } else if (caprbtn && (WM_RBUTTONDBLCLK == wParam || WM_NCRBUTTONDBLCLK == wParam)) {
         enable = true;
@@ -441,7 +449,7 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
             if (mouse_lbutton_hold) {
                 Keyobj* kobj = g_keyopts->get_mouse_lr_button();
                 rval = kobj->send_key(lParam);
-            } 
+            }
             if (mouse_mbutton_hold) {
                 Keyobj* kobj = g_keyopts->get_mouse_mr_button();
                 int rval2 = kobj->send_key(lParam);
@@ -462,14 +470,6 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
         }
         mouse_r_upevent_cancel = false;
         mouse_rbutton_hold = false;
-
-
-
-
-
-
-
-
 
     } else if (capxbtn && (WM_XBUTTONDBLCLK == wParam || WM_NCXBUTTONDBLCLK == wParam)) {
         enable = true;
