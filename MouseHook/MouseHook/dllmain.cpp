@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <string>
 #include <vector>
 #include <windowsx.h>
 #include "MouseHook.h"
@@ -122,6 +123,8 @@ class KeyOptions {
     Keyobj* m_mltbutton = nullptr;
     Keyobj* m_mrtbutton = nullptr;
     Keyobj* m_lmtbutton = nullptr;
+    Keyobj* m_lutbutton = nullptr;
+    Keyobj* m_ldtbutton = nullptr;
 
 public:
     KeyOptions()
@@ -136,6 +139,8 @@ public:
         m_mltbutton = new Keyobj();
         m_mrtbutton = new Keyobj();
         m_lmtbutton = new Keyobj();
+        m_lutbutton = new Keyobj();
+        m_ldtbutton = new Keyobj();
     }
 
     ~KeyOptions()
@@ -150,6 +155,8 @@ public:
         delete m_mltbutton;
         delete m_mrtbutton;
         delete m_lmtbutton;
+        delete m_lutbutton;
+        delete m_ldtbutton;
     }
 
     void set_mouse_left_button(int index, int keycode, bool ctrl, bool alt, bool shift)
@@ -192,6 +199,14 @@ public:
     {
         m_lmtbutton->set_key(index, keycode, ctrl, alt, shift);
     }
+    void set_mouse_lu_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+    {
+        m_lutbutton->set_key(index, keycode, ctrl, alt, shift);
+    }
+    void set_mouse_ld_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+    {
+        m_ldtbutton->set_key(index, keycode, ctrl, alt, shift);
+    }
 
     Keyobj* get_mouse_left_button()
     {
@@ -233,6 +248,14 @@ public:
     {
         return m_lmtbutton;
     }
+    Keyobj* get_mouse_lu_button()
+    {
+        return m_lutbutton;
+    }
+    Keyobj* get_mouse_ld_button()
+    {
+        return m_ldtbutton;
+    }
 
 private:
 };
@@ -256,6 +279,9 @@ bool mouse_x_upevent_cancel = false;
 bool mouse_r_upevent_cancel = false;
 bool mouse_m_upevent_cancel = false;
 bool mouse_l_upevent_cancel = false;
+
+int mouse_wheel_count = 0;
+bool mouse_wheel_up = false;
 
 LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam);
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
@@ -344,6 +370,17 @@ void __cdecl set_mouse_lm_button(int index, int keycode, bool ctrl, bool alt, bo
 {
     if (g_keyopts)
         g_keyopts->set_mouse_lm_button(index, keycode, ctrl, alt, shift);
+}
+
+void __cdecl set_mouse_lu_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+{
+    if (g_keyopts)
+        g_keyopts->set_mouse_lu_button(index, keycode, ctrl, alt, shift);
+}
+void __cdecl set_mouse_ld_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+{
+    if (g_keyopts)
+        g_keyopts->set_mouse_ld_button(index, keycode, ctrl, alt, shift);
 }
 
 int click_xbutton(int state, WPARAM wParam, LPARAM lParam)
@@ -487,14 +524,42 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
             rval = 1;
         }
         mouse_x_upevent_cancel = false;
+
+    } else if (capxbtn && (WM_MOUSEMOVE == wParam || WM_NCMOUSEMOVE == wParam)) {
+        enable = true;
     } else if (capwheel && WM_MOUSEHWHEEL == wParam) {
         enable = true;
     } else if (capwheel && WM_MOUSEWHEEL == wParam) {
         enable = true;
-    } else if (capmove && WM_MOUSEMOVE == wParam) {
-        enable = true;
-    } else if (capmove && WM_NCMOUSEMOVE == wParam) {
-        enable = true;
+
+        if (mouse_lbutton_hold) {
+            rval = 1;
+            MSLLHOOKSTRUCT* Mll = (MSLLHOOKSTRUCT*)lParam;
+            int WheelDelta = GET_WHEEL_DELTA_WPARAM(Mll->mouseData);
+            if (WheelDelta < 0) {
+                if (mouse_wheel_up) {
+                    mouse_wheel_up = false;
+                    mouse_wheel_count = 0;
+                }
+            } else {
+                if (!mouse_wheel_up) {
+                    mouse_wheel_up = true;
+                    mouse_wheel_count = 0;
+                }
+            }
+            mouse_wheel_count += WheelDelta;
+
+            if (239 < mouse_wheel_count) {
+                mouse_wheel_count = 0;
+                Keyobj* kobj = g_keyopts->get_mouse_lu_button();
+                kobj->send_key(lParam);
+
+            } else if (mouse_wheel_count < -239) {
+                mouse_wheel_count = 0;
+                Keyobj* kobj = g_keyopts->get_mouse_ld_button();
+                kobj->send_key(lParam);
+            }
+        }
     }
 
     if (enable) {
