@@ -460,8 +460,6 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
             g_x = mousell->pt.x;
             g_y = mousell->pt.y;
             SetCursorPos(0, 0);
-        } else {
-            cancel_lclick = 0;
         }
 
     } else if (capmbtn && (WM_MBUTTONDBLCLK == wParam || WM_NCMBUTTONDBLCLK == wParam)) {
@@ -502,8 +500,6 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
             g_x = mousell->pt.x;
             g_y = mousell->pt.y;
             SetCursorPos(0, 0);
-        } else {
-            cancel_mclick = 0;
         }
 
     } else if (caprbtn && (WM_RBUTTONDBLCLK == wParam || WM_NCRBUTTONDBLCLK == wParam)) {
@@ -563,8 +559,13 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
     } else if (capxbtn && (WM_MOUSEMOVE == wParam || WM_NCMOUSEMOVE == wParam)) {
         enable = true;
 
-        if (cancel_lclick == 2) {
+
+        if (cancel_lclick == 3) {
+            rval = 1;
             cancel_lclick = 0;
+            SetCursorPos(g_x, g_y);
+        }else if (cancel_lclick == 2) {
+            cancel_lclick = 3;
             rval = 1;
             INPUT data;
             memset(&data, 0, sizeof(data));
@@ -573,10 +574,15 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
             data.mi.dy = 0;
             data.mi.dwFlags = MOUSEEVENTF_LEFTUP;
             UINT count = SendInput(1, &data, sizeof(INPUT));
-            SetCursorPos(g_x, g_y);
+            SetCursorPos(g_x / 2, g_y/2);
         }
-        if (cancel_mclick == 2) {
+
+        if (cancel_mclick == 3) {
+            rval = 1;
             cancel_mclick = 0;
+            SetCursorPos(g_x, g_y);
+        }else if (cancel_mclick == 2) {
+            cancel_mclick = 3;
             rval = 1;
             INPUT data;
             memset(&data, 0, sizeof(data));
@@ -585,8 +591,9 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
             data.mi.dy = 0;
             data.mi.dwFlags = MOUSEEVENTF_MIDDLEUP;
             UINT count = SendInput(1, &data, sizeof(INPUT));
-            SetCursorPos(g_x, g_y);
+            SetCursorPos(g_x / 2, g_y / 2);
         }
+
 
     } else if (capwheel && WM_MOUSEHWHEEL == wParam) {
         enable = true;
