@@ -19,6 +19,8 @@ HWND m_right_set_btn = nullptr;
 HWND m_x1_set_btn = nullptr;
 HWND m_x2_set_btn = nullptr;
 HWND m_lr_set_btn = nullptr;
+
+HWND m_rm_set_btn = nullptr;
 HWND m_rl_set_btn = nullptr;
 HWND m_ml_set_btn = nullptr;
 HWND m_mr_set_btn = nullptr;
@@ -49,6 +51,7 @@ public:
     KeyObj m_x2_key;
     KeyObj m_lr_key;
     KeyObj m_rl_key;
+    KeyObj m_rm_key;
     KeyObj m_ml_key;
     KeyObj m_mr_key;
     KeyObj m_lm_key;
@@ -126,7 +129,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
     hInst = hInstance;
     g_hwnd = CreateWindowW(szWindowClass, L"", WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX,
-        CW_USEDEFAULT, 0, 264, 560, nullptr, nullptr, hInstance, nullptr);
+        CW_USEDEFAULT, 0, 264, 590, nullptr, nullptr, hInstance, nullptr);
     if (!g_hwnd) {
         return FALSE;
     }
@@ -175,15 +178,16 @@ void create_gui()
     m_ml_set_btn = create_button(g_hwnd, 32, 206, 180, 26, IDD_ML_SET_BUTTON, (TCHAR*)L"MIddle && Left Button");
     m_mr_set_btn = create_button(g_hwnd, 32, 238, 180, 26, IDD_MR_SET_BUTTON, (TCHAR*)L"MIddle && Right Button");
     m_rl_set_btn = create_button(g_hwnd, 32, 270, 180, 26, IDD_RL_SET_BUTTON, (TCHAR*)L"Right && Left Button");
-    m_lu_set_btn = create_button(g_hwnd, 32, 302, 180, 26, IDD_LU_SET_BUTTON, (TCHAR*)L"Left && Wheel Up");
-    m_ld_set_btn = create_button(g_hwnd, 32, 334, 180, 26, IDD_LD_SET_BUTTON, (TCHAR*)L"Left && Wheel Down");
+    m_rm_set_btn = create_button(g_hwnd, 32, 302, 180, 26, IDD_RM_SET_BUTTON, (TCHAR*)L"Right && MIddle Button");
+    m_lu_set_btn = create_button(g_hwnd, 32, 334, 180, 26, IDD_LU_SET_BUTTON, (TCHAR*)L"Left && Wheel Up");
+    m_ld_set_btn = create_button(g_hwnd, 32, 366, 180, 26, IDD_LD_SET_BUTTON, (TCHAR*)L"Left && Wheel Down");
 
-    g_eventedit_hwnd = create_edittext(g_hwnd, 4, 374, 240, 21, 0);
-    g_event_x_hwnd = create_edittext(g_hwnd, 4, 394, 100, 21, 0);
-    g_event_y_hwnd = create_edittext(g_hwnd, 4, 414, 100, 21, 0);
-    g_event_data_hwnd = create_edittext(g_hwnd, 4, 434, 100, 21, 0);
-    g_event_flg_hwnd = create_edittext(g_hwnd, 4, 454, 100, 21, 0);
-    g_event_time_hwnd = create_edittext(g_hwnd, 4, 474, 100, 21, 0);
+    g_eventedit_hwnd = create_edittext(g_hwnd, 4, 404, 240, 21, 0);
+    g_event_x_hwnd = create_edittext(g_hwnd, 4, 424, 100, 21, 0);
+    g_event_y_hwnd = create_edittext(g_hwnd, 4, 444, 100, 21, 0);
+    g_event_data_hwnd = create_edittext(g_hwnd, 4, 464, 100, 21, 0);
+    g_event_flg_hwnd = create_edittext(g_hwnd, 4, 484, 100, 21, 0);
+    g_event_time_hwnd = create_edittext(g_hwnd, 4, 504, 100, 21, 0);
 
     SendMessage(m_middle_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
     SendMessage(m_right_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
@@ -191,6 +195,7 @@ void create_gui()
     SendMessage(m_x2_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
     SendMessage(m_lr_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
     SendMessage(m_rl_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
+    SendMessage(m_rm_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
     SendMessage(m_ml_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
     SendMessage(m_mr_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
     SendMessage(m_lm_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
@@ -305,21 +310,18 @@ void create_option_control(HWND hDlg)
     KeyObj keyobj;
     if (active_button_id == IDD_MIDDLE_SET_BUTTON) {
         keyobj = keyobjs->m_middle_key;
-
     } else if (active_button_id == IDD_RIGHT_SET_BUTTON) {
         keyobj = keyobjs->m_right_key;
-
     } else if (active_button_id == IDD_X1_SET_BUTTON) {
         keyobj = keyobjs->m_x1_key;
-
     } else if (active_button_id == IDD_X2_SET_BUTTON) {
         keyobj = keyobjs->m_x2_key;
-
     } else if (active_button_id == IDD_LR_SET_BUTTON) {
         keyobj = keyobjs->m_lr_key;
-
     } else if (active_button_id == IDD_RL_SET_BUTTON) {
         keyobj = keyobjs->m_rl_key;
+    } else if (active_button_id == IDD_RM_SET_BUTTON) {
+        keyobj = keyobjs->m_rm_key;
     } else if (active_button_id == IDD_ML_SET_BUTTON) {
         keyobj = keyobjs->m_ml_key;
     } else if (active_button_id == IDD_MR_SET_BUTTON) {
@@ -517,6 +519,8 @@ void send_key_option(int keyobjid, int index, int keycode, bool ctrl, bool alt, 
 
     } else if (keyobjid == IDD_RL_SET_BUTTON) {
         set_mouse_rl_button(0, keycode, ctrl, alt, shift);
+    } else if (keyobjid == IDD_RM_SET_BUTTON) {
+        set_mouse_rm_button(0, keycode, ctrl, alt, shift);
     } else if (keyobjid == IDD_ML_SET_BUTTON) {
         set_mouse_ml_button(0, keycode, ctrl, alt, shift);
     } else if (keyobjid == IDD_MR_SET_BUTTON) {
@@ -571,6 +575,13 @@ void set_option_obj(int keyobjid, int keycode, bool ctrl, bool alt, bool shift)
         keyobjs->m_rl_key.ctrl = ctrl;
         keyobjs->m_rl_key.alt = alt;
         keyobjs->m_rl_key.shift = shift;
+        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift);
+
+    } else if (keyobjid == IDD_RM_SET_BUTTON) {
+        keyobjs->m_rm_key.keycode = keycode;
+        keyobjs->m_rm_key.ctrl = ctrl;
+        keyobjs->m_rm_key.alt = alt;
+        keyobjs->m_rm_key.shift = shift;
         send_key_option(keyobjid, 0, keycode, ctrl, alt, shift);
 
     } else if (keyobjid == IDD_ML_SET_BUTTON) {
@@ -741,6 +752,7 @@ void get_options()
     load_key(IDD_X2_SET_BUTTON);
     load_key(IDD_LR_SET_BUTTON);
     load_key(IDD_RL_SET_BUTTON);
+    load_key(IDD_RM_SET_BUTTON);
     load_key(IDD_ML_SET_BUTTON);
     load_key(IDD_MR_SET_BUTTON);
     load_key(IDD_LM_SET_BUTTON);
@@ -795,6 +807,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         case IDD_X2_SET_BUTTON:
         case IDD_LR_SET_BUTTON:
         case IDD_RL_SET_BUTTON:
+        case IDD_RM_SET_BUTTON:
         case IDD_ML_SET_BUTTON:
         case IDD_MR_SET_BUTTON:
         case IDD_LM_SET_BUTTON:

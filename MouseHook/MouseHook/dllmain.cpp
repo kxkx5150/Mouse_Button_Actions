@@ -109,6 +109,15 @@ void __cdecl set_mouse_rl_button(int index, int keycode, bool ctrl, bool alt, bo
     if (g_keyopts)
         g_keyopts->set_mouse_rl_button(index, keycode, ctrl, alt, shift);
 }
+void __cdecl set_mouse_rm_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+{
+    if (g_keyopts)
+        g_keyopts->set_mouse_rm_button(index, keycode, ctrl, alt, shift);
+}
+
+
+
+
 
 void __cdecl set_mouse_ml_button(int index, int keycode, bool ctrl, bool alt, bool shift)
 {
@@ -231,6 +240,19 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
                 rval = 1;
         }
 
+        if (mouse_rbutton_hold) {
+            Keyobj* kobj = g_keyopts->get_mouse_rm_button();
+            int rval3 = kobj->send_key(lParam);
+            if (rupflg == 1) {
+                mouse_r_upevent_cancel = true;
+                rupflg = 2;
+            }
+            if (rval || rval3)
+                rval = 1;
+        }
+
+
+
         if (rval == 1) {
             mouse_m_upevent_cancel = true;
         } else {
@@ -349,7 +371,6 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
                 flg = true;
             }
             if (flg) {
-                OutputDebugString(L"sendinput\n");
                 rupflg = 2;
                 INPUT Input = { 0 };
                 Input.type = INPUT_MOUSE;

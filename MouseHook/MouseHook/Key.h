@@ -118,6 +118,7 @@ class KeyOptions {
     Keyobj* m_x2tbutton = nullptr;
     Keyobj* m_lrtbutton = nullptr;
     Keyobj* m_rltbutton = nullptr;
+    Keyobj* m_rmtbutton = nullptr;
     Keyobj* m_mltbutton = nullptr;
     Keyobj* m_mrtbutton = nullptr;
     Keyobj* m_lmtbutton = nullptr;
@@ -134,6 +135,7 @@ public:
         m_x2tbutton = new Keyobj();
         m_lrtbutton = new Keyobj();
         m_rltbutton = new Keyobj();
+        m_rmtbutton = new Keyobj();
         m_mltbutton = new Keyobj();
         m_mrtbutton = new Keyobj();
         m_lmtbutton = new Keyobj();
@@ -150,6 +152,7 @@ public:
         delete m_x2tbutton;
         delete m_lrtbutton;
         delete m_rltbutton;
+        delete m_rmtbutton;
         delete m_mltbutton;
         delete m_mrtbutton;
         delete m_lmtbutton;
@@ -184,6 +187,10 @@ public:
     void set_mouse_rl_button(int index, int keycode, bool ctrl, bool alt, bool shift)
     {
         m_rltbutton->set_key(index, keycode, ctrl, alt, shift);
+    }
+    void set_mouse_rm_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+    {
+        m_rmtbutton->set_key(index, keycode, ctrl, alt, shift);
     }
     void set_mouse_ml_button(int index, int keycode, bool ctrl, bool alt, bool shift)
     {
@@ -233,6 +240,10 @@ public:
     Keyobj* get_mouse_rl_button()
     {
         return m_rltbutton;
+    }
+    Keyobj* get_mouse_rm_button()
+    {
+        return m_rmtbutton;
     }
     Keyobj* get_mouse_ml_button()
     {
