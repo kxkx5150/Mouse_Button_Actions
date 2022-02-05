@@ -34,6 +34,7 @@
 #define VK_Y 0x59
 #define VK_Z 0x5A
 
+
 __DLL_PORT void __cdecl start_hook(HWND hwnd, bool lbtn, bool mbtn, bool rbtn, bool xbtn, bool wheel, bool move);
 __DLL_PORT void __cdecl end_hook();
 

@@ -858,6 +858,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         delete mousell;
     } break;
 
+
+
+
+
+
+
     case WM_DESTROY:
         DeleteObject(m_hFont);
         DeleteObject(m_bhFont);
