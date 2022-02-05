@@ -169,9 +169,8 @@ xcopy /y "$(SolutionDir)MouseHook\MouseHook\MouseHook.h" "$(ProjectDir)"
     <ResourceCompile Include="Mouse_Button_Actions.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\..\..\Downloads\mouse.ico" />
+    <Image Include="mouse.ico" />
     <Image Include="Mouse_Button_Actions.ico" />
-    <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MouseHook\MouseHook\MouseHook.vcxproj">
