@@ -27,6 +27,8 @@ HWND m_mr_set_btn = nullptr;
 HWND m_lm_set_btn = nullptr;
 HWND m_lu_set_btn = nullptr;
 HWND m_ld_set_btn = nullptr;
+HWND m_ru_set_btn = nullptr;
+HWND m_rd_set_btn = nullptr;
 
 HWND g_eventedit_hwnd = nullptr;
 HWND g_event_x_hwnd = nullptr;
@@ -57,6 +59,8 @@ public:
     KeyObj m_lm_key;
     KeyObj m_lu_key;
     KeyObj m_ld_key;
+    KeyObj m_ru_key;
+    KeyObj m_rd_key;
 
 public:
     KeyObjs()
@@ -129,7 +133,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
     hInst = hInstance;
     g_hwnd = CreateWindowW(szWindowClass, L"", WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX,
-        CW_USEDEFAULT, 0, 264, 590, nullptr, nullptr, hInstance, nullptr);
+        CW_USEDEFAULT, 0, 264, 660, nullptr, nullptr, hInstance, nullptr);
     if (!g_hwnd) {
         return FALSE;
     }
@@ -174,20 +178,21 @@ void create_gui()
     m_x2_set_btn = create_button(g_hwnd, 32, 110, 180, 26, IDD_X2_SET_BUTTON, (TCHAR*)L"X2 Button");
     m_lm_set_btn = create_button(g_hwnd, 32, 142, 180, 26, IDD_LM_SET_BUTTON, (TCHAR*)L"Left && MIddle Button");
     m_lr_set_btn = create_button(g_hwnd, 32, 174, 180, 26, IDD_LR_SET_BUTTON, (TCHAR*)L"Left && Right Button");
-    //ShowWindow(m_rl_set_btn, SW_HIDE);
     m_ml_set_btn = create_button(g_hwnd, 32, 206, 180, 26, IDD_ML_SET_BUTTON, (TCHAR*)L"MIddle && Left Button");
     m_mr_set_btn = create_button(g_hwnd, 32, 238, 180, 26, IDD_MR_SET_BUTTON, (TCHAR*)L"MIddle && Right Button");
     m_rl_set_btn = create_button(g_hwnd, 32, 270, 180, 26, IDD_RL_SET_BUTTON, (TCHAR*)L"Right && Left Button");
     m_rm_set_btn = create_button(g_hwnd, 32, 302, 180, 26, IDD_RM_SET_BUTTON, (TCHAR*)L"Right && MIddle Button");
     m_lu_set_btn = create_button(g_hwnd, 32, 334, 180, 26, IDD_LU_SET_BUTTON, (TCHAR*)L"Left && Wheel Up");
     m_ld_set_btn = create_button(g_hwnd, 32, 366, 180, 26, IDD_LD_SET_BUTTON, (TCHAR*)L"Left && Wheel Down");
+    m_ru_set_btn = create_button(g_hwnd, 32, 398, 180, 26, IDD_RU_SET_BUTTON, (TCHAR*)L"Right && Wheel Up");
+    m_rd_set_btn = create_button(g_hwnd, 32, 430, 180, 26, IDD_RD_SET_BUTTON, (TCHAR*)L"Right && Wheel Down");
 
-    g_eventedit_hwnd = create_edittext(g_hwnd, 4, 404, 240, 21, 0);
-    g_event_x_hwnd = create_edittext(g_hwnd, 4, 424, 100, 21, 0);
-    g_event_y_hwnd = create_edittext(g_hwnd, 4, 444, 100, 21, 0);
-    g_event_data_hwnd = create_edittext(g_hwnd, 4, 464, 100, 21, 0);
-    g_event_flg_hwnd = create_edittext(g_hwnd, 4, 484, 100, 21, 0);
-    g_event_time_hwnd = create_edittext(g_hwnd, 4, 504, 100, 21, 0);
+    g_eventedit_hwnd = create_edittext(g_hwnd, 4, 474, 240, 21, 0);
+    g_event_x_hwnd = create_edittext(g_hwnd, 4, 494, 100, 21, 0);
+    g_event_y_hwnd = create_edittext(g_hwnd, 4, 514, 100, 21, 0);
+    g_event_data_hwnd = create_edittext(g_hwnd, 4, 534, 100, 21, 0);
+    g_event_flg_hwnd = create_edittext(g_hwnd, 4, 554, 100, 21, 0);
+    g_event_time_hwnd = create_edittext(g_hwnd, 4, 574, 100, 21, 0);
 
     SendMessage(m_middle_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
     SendMessage(m_right_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
@@ -201,6 +206,8 @@ void create_gui()
     SendMessage(m_lm_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
     SendMessage(m_lu_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
     SendMessage(m_ld_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
+    SendMessage(m_ru_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
+    SendMessage(m_rd_set_btn, WM_SETFONT, (WPARAM)m_bhFont, MAKELPARAM(FALSE, 0));
 
     SendMessage(g_eventedit_hwnd, WM_SETFONT, (WPARAM)m_hFont, MAKELPARAM(FALSE, 0));
     SendMessage(g_event_x_hwnd, WM_SETFONT, (WPARAM)m_hFont, MAKELPARAM(FALSE, 0));
@@ -332,6 +339,10 @@ void create_option_control(HWND hDlg)
         keyobj = keyobjs->m_lu_key;
     } else if (active_button_id == IDD_LD_SET_BUTTON) {
         keyobj = keyobjs->m_ld_key;
+    } else if (active_button_id == IDD_RU_SET_BUTTON) {
+        keyobj = keyobjs->m_ru_key;
+    } else if (active_button_id == IDD_RD_SET_BUTTON) {
+        keyobj = keyobjs->m_rd_key;
     }
 
     HWND keylisthwnd = CreateWindow(
@@ -531,6 +542,10 @@ void send_key_option(int keyobjid, int index, int keycode, bool ctrl, bool alt, 
         set_mouse_lu_button(0, keycode, ctrl, alt, shift);
     } else if (keyobjid == IDD_LD_SET_BUTTON) {
         set_mouse_ld_button(0, keycode, ctrl, alt, shift);
+    } else if (keyobjid == IDD_RU_SET_BUTTON) {
+        set_mouse_ru_button(0, keycode, ctrl, alt, shift);
+    } else if (keyobjid == IDD_RD_SET_BUTTON) {
+        set_mouse_rd_button(0, keycode, ctrl, alt, shift);
     }
 }
 void set_option_obj(int keyobjid, int keycode, bool ctrl, bool alt, bool shift)
@@ -614,6 +629,19 @@ void set_option_obj(int keyobjid, int keycode, bool ctrl, bool alt, bool shift)
         keyobjs->m_ld_key.ctrl = ctrl;
         keyobjs->m_ld_key.alt = alt;
         keyobjs->m_ld_key.shift = shift;
+        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift);
+
+    } else if (keyobjid == IDD_RU_SET_BUTTON) {
+        keyobjs->m_ru_key.keycode = keycode;
+        keyobjs->m_ru_key.ctrl = ctrl;
+        keyobjs->m_ru_key.alt = alt;
+        keyobjs->m_ru_key.shift = shift;
+        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift);
+    } else if (keyobjid == IDD_RD_SET_BUTTON) {
+        keyobjs->m_rd_key.keycode = keycode;
+        keyobjs->m_rd_key.ctrl = ctrl;
+        keyobjs->m_rd_key.alt = alt;
+        keyobjs->m_rd_key.shift = shift;
         send_key_option(keyobjid, 0, keycode, ctrl, alt, shift);
     }
 }
@@ -758,6 +786,8 @@ void get_options()
     load_key(IDD_LM_SET_BUTTON);
     load_key(IDD_LU_SET_BUTTON);
     load_key(IDD_LD_SET_BUTTON);
+    load_key(IDD_RU_SET_BUTTON);
+    load_key(IDD_RD_SET_BUTTON);
 }
 INT_PTR CALLBACK set_dialog_proc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -813,6 +843,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         case IDD_LM_SET_BUTTON:
         case IDD_LU_SET_BUTTON:
         case IDD_LD_SET_BUTTON:
+        case IDD_RU_SET_BUTTON:
+        case IDD_RD_SET_BUTTON:
             active_button_id = wmId;
             DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, set_dialog_proc);
             break;
@@ -857,12 +889,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         show_event(message, wParam, mousell);
         delete mousell;
     } break;
-
-
-
-
-
-
 
     case WM_DESTROY:
         DeleteObject(m_hFont);

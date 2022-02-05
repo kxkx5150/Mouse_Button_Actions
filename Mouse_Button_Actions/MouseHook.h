@@ -51,3 +51,5 @@ __DLL_PORT void __cdecl set_mouse_mr_button(int index, int keycode, bool ctrl, b
 __DLL_PORT void __cdecl set_mouse_lm_button(int index, int keycode, bool ctrl, bool alt, bool shift);
 __DLL_PORT void __cdecl set_mouse_lu_button(int index, int keycode, bool ctrl, bool alt, bool shift);
 __DLL_PORT void __cdecl set_mouse_ld_button(int index, int keycode, bool ctrl, bool alt, bool shift);
+__DLL_PORT void __cdecl set_mouse_ru_button(int index, int keycode, bool ctrl, bool alt, bool shift);
+__DLL_PORT void __cdecl set_mouse_rd_button(int index, int keycode, bool ctrl, bool alt, bool shift);

@@ -116,10 +116,6 @@ void __cdecl set_mouse_rm_button(int index, int keycode, bool ctrl, bool alt, bo
         g_keyopts->set_mouse_rm_button(index, keycode, ctrl, alt, shift);
 }
 
-
-
-
-
 void __cdecl set_mouse_ml_button(int index, int keycode, bool ctrl, bool alt, bool shift)
 {
     if (g_keyopts)
@@ -146,6 +142,16 @@ void __cdecl set_mouse_ld_button(int index, int keycode, bool ctrl, bool alt, bo
     if (g_keyopts)
         g_keyopts->set_mouse_ld_button(index, keycode, ctrl, alt, shift);
 }
+void __cdecl set_mouse_ru_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+{
+    if (g_keyopts)
+        g_keyopts->set_mouse_ru_button(index, keycode, ctrl, alt, shift);
+}
+void __cdecl set_mouse_rd_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+{
+    if (g_keyopts)
+        g_keyopts->set_mouse_rd_button(index, keycode, ctrl, alt, shift);
+}
 
 int click_xbutton(int state, WPARAM wParam, LPARAM lParam)
 {
@@ -168,9 +174,6 @@ int click_xbutton(int state, WPARAM wParam, LPARAM lParam)
     }
     return 0;
 }
-
-
-
 
 LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
 {
@@ -281,7 +284,7 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
             emulate_rbutton_click = false;
             mouse_r_upevent_cancel = false;
             return 0;
-        } 
+        }
 
         bool cancleflg = false;
         Keyobj* kobj = g_keyopts->get_mouse_right_button();
@@ -310,7 +313,7 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
         mouse_r_upevent_cancel = true;
         if (cancleflg)
             emulate_rbutton_click = false;
-        else 
+        else
             emulate_rbutton_click = true;
         rval = 1;
     } else if (caprbtn && (WM_RBUTTONUP == wParam || WM_NCRBUTTONUP == wParam)) {
@@ -321,7 +324,7 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
             rupflg = 0;
             mouse_r_upevent_cancel = false;
             return 0;
-        } 
+        }
 
         if (mouse_r_upevent_cancel)
             rval = 1;
@@ -340,15 +343,6 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
         } else {
             rupflg = 0;
         }
-
-
-
-
-
-
-
-
-
 
     } else if (capxbtn && (WM_XBUTTONDBLCLK == wParam || WM_NCXBUTTONDBLCLK == wParam)) {
         enable = true;
@@ -420,7 +414,7 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
     } else if (capwheel && WM_MOUSEWHEEL == wParam) {
         enable = true;
 
-        if (mouse_lbutton_hold) {
+        if (mouse_lbutton_hold || mouse_rbutton_hold) {
             rval = 1;
             MSLLHOOKSTRUCT* Mll = (MSLLHOOKSTRUCT*)lParam;
             int WheelDelta = GET_WHEEL_DELTA_WPARAM(Mll->mouseData);
@@ -437,19 +431,39 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
             }
             mouse_wheel_count += WheelDelta;
 
-            int rval2 = 0;
-            if (100 < mouse_wheel_count) {
-                mouse_wheel_count = 0;
-                Keyobj* kobj = g_keyopts->get_mouse_lu_button();
-                rval2 = kobj->send_key(lParam);
+            if (mouse_lbutton_hold) {
+                int rval2 = 0;
+                if (100 < mouse_wheel_count) {
+                    mouse_wheel_count = 0;
+                    Keyobj* kobj = g_keyopts->get_mouse_lu_button();
+                    rval2 = kobj->send_key(lParam);
 
-            } else if (mouse_wheel_count < -100) {
-                mouse_wheel_count = 0;
-                Keyobj* kobj = g_keyopts->get_mouse_ld_button();
-                rval2 = kobj->send_key(lParam);
+                } else if (mouse_wheel_count < -100) {
+                    mouse_wheel_count = 0;
+                    Keyobj* kobj = g_keyopts->get_mouse_ld_button();
+                    rval2 = kobj->send_key(lParam);
+                }
+                if (0 < rval2)
+                    cancel_lclick = 1;
             }
-            if (0 < rval2)
-                cancel_lclick = 1;
+
+            if (mouse_rbutton_hold) {
+                int rval2 = 0;
+                if (100 < mouse_wheel_count) {
+                    mouse_wheel_count = 0;
+                    Keyobj* kobj = g_keyopts->get_mouse_ru_button();
+                    rval2 = kobj->send_key(lParam);
+
+                } else if (mouse_wheel_count < -100) {
+                    mouse_wheel_count = 0;
+                    Keyobj* kobj = g_keyopts->get_mouse_rd_button();
+                    rval2 = kobj->send_key(lParam);
+                }
+                if (0 < rval2) {
+                    mouse_r_upevent_cancel = true;
+                    emulate_rbutton_click = false;
+                }
+            }
         }
     }
 
