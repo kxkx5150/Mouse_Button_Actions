@@ -152,6 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Key.h" />
     <ClInclude Include="MouseHook.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>

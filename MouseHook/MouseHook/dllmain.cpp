@@ -2,264 +2,8 @@
 #include <string>
 #include <vector>
 #include <windowsx.h>
+#include "Key.h"
 #include "MouseHook.h"
-
-struct Key {
-    int keycode = 0;
-    bool ctrl = false;
-    bool alt = false;
-    bool shift = false;
-};
-
-class Keyobj {
-
-public:
-    bool enable = false;
-    std::vector<Key> m_keys;
-
-public:
-    Keyobj()
-    {
-    }
-
-    ~Keyobj()
-    {
-    }
-
-    void set_key(int index, int keycode, bool ctrl, bool alt, bool shift)
-    {
-        if (index == 0)
-            m_keys.clear();
-        if (keycode == 0)
-            return;
-        enable = true;
-        Key key;
-        key.keycode = keycode;
-        key.ctrl = ctrl;
-        key.alt = alt;
-        key.shift = shift;
-        m_keys.push_back(key);
-    }
-    int send_key(LPARAM lParam)
-    {
-        if (!enable)
-            return 0;
-        if (m_keys.size() < 1)
-            return 0;
-
-        INPUT ip;
-
-        for (int i = 0; i < m_keys.size(); i++) {
-            Key key = m_keys[i];
-            if (key.keycode == 0)
-                return 0;
-
-            if (key.keycode == 1)
-                return 1;
-
-            /// Keyboard
-            ip.type = INPUT_KEYBOARD;
-            ip.ki.wScan = 0;
-            ip.ki.time = 0;
-            ip.ki.dwExtraInfo = 0;
-
-            if (key.ctrl) {
-                ip.ki.wVk = VK_CONTROL;
-                ip.ki.dwFlags = 0;
-                SendInput(1, &ip, sizeof(INPUT));
-            }
-            if (key.alt) {
-                ip.ki.wVk = VK_MENU;
-                ip.ki.dwFlags = 0;
-                SendInput(1, &ip, sizeof(INPUT));
-            }
-            if (key.shift) {
-                ip.ki.wVk = VK_SHIFT;
-                ip.ki.dwFlags = 0;
-                SendInput(1, &ip, sizeof(INPUT));
-            }
-
-            ip.ki.wVk = key.keycode;
-            ip.ki.dwFlags = 0;
-            SendInput(1, &ip, sizeof(INPUT));
-
-            ip.ki.wVk = key.keycode;
-            ip.ki.dwFlags = KEYEVENTF_KEYUP;
-            SendInput(1, &ip, sizeof(INPUT));
-
-            if (key.ctrl) {
-                ip.ki.wVk = VK_CONTROL;
-                ip.ki.dwFlags = KEYEVENTF_KEYUP;
-                SendInput(1, &ip, sizeof(INPUT));
-            }
-            if (key.alt) {
-                ip.ki.wVk = VK_MENU;
-                ip.ki.dwFlags = KEYEVENTF_KEYUP;
-                SendInput(1, &ip, sizeof(INPUT));
-            }
-            if (key.shift) {
-                ip.ki.wVk = VK_SHIFT;
-                ip.ki.dwFlags = KEYEVENTF_KEYUP;
-                SendInput(1, &ip, sizeof(INPUT));
-            }
-        }
-
-        return 1;
-    }
-    void clear_key()
-    {
-        m_keys.clear();
-    }
-
-private:
-};
-class KeyOptions {
-    Keyobj* m_leftbutton = nullptr;
-    Keyobj* m_middlebutton = nullptr;
-    Keyobj* m_rightbutton = nullptr;
-    Keyobj* m_x1tbutton = nullptr;
-    Keyobj* m_x2tbutton = nullptr;
-    Keyobj* m_lrtbutton = nullptr;
-    Keyobj* m_rltbutton = nullptr;
-    Keyobj* m_mltbutton = nullptr;
-    Keyobj* m_mrtbutton = nullptr;
-    Keyobj* m_lmtbutton = nullptr;
-    Keyobj* m_lutbutton = nullptr;
-    Keyobj* m_ldtbutton = nullptr;
-
-public:
-    KeyOptions()
-    {
-        m_leftbutton = new Keyobj();
-        m_middlebutton = new Keyobj();
-        m_rightbutton = new Keyobj();
-        m_x1tbutton = new Keyobj();
-        m_x2tbutton = new Keyobj();
-        m_lrtbutton = new Keyobj();
-        m_rltbutton = new Keyobj();
-        m_mltbutton = new Keyobj();
-        m_mrtbutton = new Keyobj();
-        m_lmtbutton = new Keyobj();
-        m_lutbutton = new Keyobj();
-        m_ldtbutton = new Keyobj();
-    }
-
-    ~KeyOptions()
-    {
-        delete m_leftbutton;
-        delete m_middlebutton;
-        delete m_rightbutton;
-        delete m_x1tbutton;
-        delete m_x2tbutton;
-        delete m_lrtbutton;
-        delete m_rltbutton;
-        delete m_mltbutton;
-        delete m_mrtbutton;
-        delete m_lmtbutton;
-        delete m_lutbutton;
-        delete m_ldtbutton;
-    }
-
-    void set_mouse_left_button(int index, int keycode, bool ctrl, bool alt, bool shift)
-    {
-        //m_leftbutton->set_key(index, keycode , ctrl, alt, shift);
-    }
-    void set_mouse_middle_button(int index, int keycode, bool ctrl, bool alt, bool shift)
-    {
-        m_middlebutton->set_key(index, keycode, ctrl, alt, shift);
-    }
-    void set_mouse_right_button(int index, int keycode, bool ctrl, bool alt, bool shift)
-    {
-        m_rightbutton->set_key(index, keycode, ctrl, alt, shift);
-    }
-    void set_mouse_x1_button(int index, int keycode, bool ctrl, bool alt, bool shift)
-    {
-        m_x1tbutton->set_key(index, keycode, ctrl, alt, shift);
-    }
-    void set_mouse_x2_button(int index, int keycode, bool ctrl, bool alt, bool shift)
-    {
-        m_x2tbutton->set_key(index, keycode, ctrl, alt, shift);
-    }
-    void set_mouse_lr_button(int index, int keycode, bool ctrl, bool alt, bool shift)
-    {
-        m_lrtbutton->set_key(index, keycode, ctrl, alt, shift);
-    }
-    void set_mouse_rl_button(int index, int keycode, bool ctrl, bool alt, bool shift)
-    {
-        m_rltbutton->set_key(index, keycode, ctrl, alt, shift);
-    }
-    void set_mouse_ml_button(int index, int keycode, bool ctrl, bool alt, bool shift)
-    {
-        m_mltbutton->set_key(index, keycode, ctrl, alt, shift);
-    }
-    void set_mouse_mr_button(int index, int keycode, bool ctrl, bool alt, bool shift)
-    {
-        m_mrtbutton->set_key(index, keycode, ctrl, alt, shift);
-    }
-    void set_mouse_lm_button(int index, int keycode, bool ctrl, bool alt, bool shift)
-    {
-        m_lmtbutton->set_key(index, keycode, ctrl, alt, shift);
-    }
-    void set_mouse_lu_button(int index, int keycode, bool ctrl, bool alt, bool shift)
-    {
-        m_lutbutton->set_key(index, keycode, ctrl, alt, shift);
-    }
-    void set_mouse_ld_button(int index, int keycode, bool ctrl, bool alt, bool shift)
-    {
-        m_ldtbutton->set_key(index, keycode, ctrl, alt, shift);
-    }
-
-    Keyobj* get_mouse_left_button()
-    {
-        return m_leftbutton;
-    }
-    Keyobj* get_mouse_middle_button()
-    {
-        return m_middlebutton;
-    }
-    Keyobj* get_mouse_right_button()
-    {
-        return m_rightbutton;
-    }
-    Keyobj* get_mouse_x1_button()
-    {
-        return m_x1tbutton;
-    }
-    Keyobj* get_mouse_x2_button()
-    {
-        return m_x2tbutton;
-    }
-    Keyobj* get_mouse_lr_button()
-    {
-        return m_lrtbutton;
-    }
-    Keyobj* get_mouse_rl_button()
-    {
-        return m_rltbutton;
-    }
-    Keyobj* get_mouse_ml_button()
-    {
-        return m_mltbutton;
-    }
-    Keyobj* get_mouse_mr_button()
-    {
-        return m_mrtbutton;
-    }
-    Keyobj* get_mouse_lm_button()
-    {
-        return m_lmtbutton;
-    }
-    Keyobj* get_mouse_lu_button()
-    {
-        return m_lutbutton;
-    }
-    Keyobj* get_mouse_ld_button()
-    {
-        return m_ldtbutton;
-    }
-
-private:
-};
 
 HHOOK g_hook = nullptr;
 HWND g_hwnd = nullptr;
@@ -283,6 +27,15 @@ bool mouse_l_upevent_cancel = false;
 
 int mouse_wheel_count = 0;
 bool mouse_wheel_up = false;
+
+int g_x = 0;
+int g_y = 0;
+int cancel_lclick = 0;
+int cancel_mclick = 0;
+
+int rupflg = 0;
+int g_rx = 0;
+int g_ry = 0;
 
 LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam);
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
@@ -406,11 +159,6 @@ int click_xbutton(int state, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-int g_x = 0;
-int g_y = 0;
-int cancel_lclick = 0;
-int cancel_mclick = 0;
-
 LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
 {
     if (!g_hwnd || code < 0)
@@ -430,6 +178,10 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
         if (mouse_rbutton_hold) {
             Keyobj* kobj = g_keyopts->get_mouse_rl_button();
             rval = kobj->send_key(lParam);
+            if (rupflg == 1) {
+                mouse_r_upevent_cancel = true;
+                rupflg = 2;
+            }
         }
         if (mouse_mbutton_hold) {
             Keyobj* kobj = g_keyopts->get_mouse_ml_button();
@@ -454,7 +206,6 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
         mouse_l_upevent_cancel = false;
 
         if (rval != 1 && cancel_lclick == 1) {
-            rval = 1;
             cancel_lclick = 2;
             auto mousell = (LPMSLLHOOKSTRUCT)lParam;
             g_x = mousell->pt.x;
@@ -494,7 +245,6 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
         mouse_mbutton_hold = false;
 
         if (rval != 1 && cancel_mclick == 1) {
-            rval = 1;
             cancel_mclick = 2;
             auto mousell = (LPMSLLHOOKSTRUCT)lParam;
             g_x = mousell->pt.x;
@@ -508,9 +258,9 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
     } else if (caprbtn && (WM_RBUTTONDOWN == wParam || WM_NCRBUTTONDOWN == wParam)) {
         enable = true;
         mouse_rbutton_hold = true;
+
         Keyobj* kobj = g_keyopts->get_mouse_right_button();
         rval = kobj->send_key(lParam);
-
         if (rval == 0) {
             if (mouse_lbutton_hold) {
                 Keyobj* kobj = g_keyopts->get_mouse_lr_button();
@@ -528,9 +278,16 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
 
         if (rval == 1) {
             mouse_r_upevent_cancel = true;
+            rupflg = 1;
         } else {
             mouse_r_upevent_cancel = false;
         }
+
+        MSLLHOOKSTRUCT* Mll = (MSLLHOOKSTRUCT*)lParam;
+        g_rx = Mll->pt.x;
+        g_ry = Mll->pt.y;
+        rval = 1;
+        rupflg++;
     } else if (caprbtn && (WM_RBUTTONUP == wParam || WM_NCRBUTTONUP == wParam)) {
         enable = true;
         if (mouse_r_upevent_cancel) {
@@ -538,6 +295,18 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
         }
         mouse_r_upevent_cancel = false;
         mouse_rbutton_hold = false;
+
+        if (rupflg == 1) {
+            INPUT Input = { 0 };
+            Input.type = INPUT_MOUSE;
+            Input.mi.dx = 0;
+            Input.mi.dy = 0;
+            Input.mi.dwFlags = MOUSEEVENTF_RIGHTDOWN | MOUSEEVENTF_RIGHTUP;
+            SendInput(1, &Input, sizeof(INPUT));
+            rval = 1;
+        } else {
+            rupflg = 0;
+        }
 
     } else if (capxbtn && (WM_XBUTTONDBLCLK == wParam || WM_NCXBUTTONDBLCLK == wParam)) {
         enable = true;
@@ -559,41 +328,37 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
     } else if (capxbtn && (WM_MOUSEMOVE == wParam || WM_NCMOUSEMOVE == wParam)) {
         enable = true;
 
-
-        if (cancel_lclick == 3) {
+        if (cancel_lclick == 2) {
             rval = 1;
             cancel_lclick = 0;
             SetCursorPos(g_x, g_y);
-        }else if (cancel_lclick == 2) {
-            cancel_lclick = 3;
-            rval = 1;
-            INPUT data;
-            memset(&data, 0, sizeof(data));
-            data.type = INPUT_MOUSE;
-            data.mi.dx = 0;
-            data.mi.dy = 0;
-            data.mi.dwFlags = MOUSEEVENTF_LEFTUP;
-            UINT count = SendInput(1, &data, sizeof(INPUT));
-            SetCursorPos(g_x / 2, g_y/2);
         }
-
-        if (cancel_mclick == 3) {
+        if (cancel_mclick == 2) {
             rval = 1;
             cancel_mclick = 0;
             SetCursorPos(g_x, g_y);
-        }else if (cancel_mclick == 2) {
-            cancel_mclick = 3;
-            rval = 1;
-            INPUT data;
-            memset(&data, 0, sizeof(data));
-            data.type = INPUT_MOUSE;
-            data.mi.dx = 0;
-            data.mi.dy = 0;
-            data.mi.dwFlags = MOUSEEVENTF_MIDDLEUP;
-            UINT count = SendInput(1, &data, sizeof(INPUT));
-            SetCursorPos(g_x / 2, g_y / 2);
         }
 
+        if (mouse_rbutton_hold && rupflg == 1) {
+            MSLLHOOKSTRUCT* Mll = (MSLLHOOKSTRUCT*)lParam;
+            bool flg = false;
+            if (abs(g_rx - Mll->pt.x) > 5) {
+                flg = true;
+            }
+            if (abs(g_ry - Mll->pt.y) > 5) {
+                flg = true;
+            }
+            if (flg) {
+                OutputDebugString(L"sendinput\n");
+                rupflg = 2;
+                INPUT Input = { 0 };
+                Input.type = INPUT_MOUSE;
+                Input.mi.dx = 0;
+                Input.mi.dy = 0;
+                Input.mi.dwFlags = MOUSEEVENTF_RIGHTDOWN;
+                SendInput(1, &Input, sizeof(INPUT));
+            }
+        }
 
     } else if (capwheel && WM_MOUSEHWHEEL == wParam) {
         enable = true;
