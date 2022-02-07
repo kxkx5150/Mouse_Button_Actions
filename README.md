@@ -19,7 +19,7 @@ Mouse Global Hook Sample
 <br>
 
 <pre>
-MIddle            = Default   
+MIddle            = None   
 Right             = Default   
 X1                = Default
 X2                = Default
