@@ -354,7 +354,7 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
             Input.mi.dy = 0;
             ::SendInput(1, &Input, sizeof(INPUT));
 
-            Sleep(1);
+            Sleep(10);
             ZeroMemory(&Input, sizeof(Input));
             Input.type = INPUT_KEYBOARD;
             Input.ki.wScan = 0;
@@ -363,11 +363,30 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
             Input.ki.wVk = VK_ESCAPE;
             Input.ki.dwFlags = 0;
             SendInput(1, &Input, sizeof(INPUT));
-
-            Sleep(300);
+            Sleep(100);
             Input.ki.wVk = VK_ESCAPE;
             Input.ki.dwFlags = KEYEVENTF_KEYUP;
             SendInput(1, &Input, sizeof(INPUT));
+
+            Sleep(300);
+            ZeroMemory(&Input, sizeof(Input));
+            Input.type = INPUT_KEYBOARD;
+            Input.ki.wScan = 0;
+            Input.ki.time = 0;
+            Input.ki.dwExtraInfo = 0;
+            Input.ki.wVk = VK_ESCAPE;
+            Input.ki.dwFlags = 0;
+            SendInput(1, &Input, sizeof(INPUT));
+            Sleep(100);
+            Input.ki.wVk = VK_ESCAPE;
+            Input.ki.dwFlags = KEYEVENTF_KEYUP;
+            SendInput(1, &Input, sizeof(INPUT));
+
+
+
+
+
+
 
             rval = 1;
             cancel_rclick = 0;
