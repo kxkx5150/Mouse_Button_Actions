@@ -230,17 +230,7 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
             SetCursorPos(g_x+1, g_y+1);
         }
 
-        if (cancel_mclick == 1) {
-            rval = 1;
-            cancel_mclick = 2;
-            auto mousell = (LPMSLLHOOKSTRUCT)lParam;
-            g_x = mousell->pt.x;
-            g_y = mousell->pt.y;
-            SetCursorPos(0, g_y);
-        } else if (cancel_mclick == 3) {
-            cancel_mclick = 0;
-            SetCursorPos(g_x + 1, g_y+1);
-        }
+
     } else if (capmbtn && (WM_MBUTTONDBLCLK == wParam || WM_NCMBUTTONDBLCLK == wParam)) {
         enable = true;
     } else if (capmbtn && (WM_MBUTTONDOWN == wParam || WM_NCMBUTTONDOWN == wParam)) {
@@ -290,6 +280,9 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
             g_x = mousell->pt.x;
             g_y = mousell->pt.y;
             SetCursorPos(0, g_y);
+        } else if (cancel_mclick == 3) {
+            cancel_mclick = 0;
+            SetCursorPos(g_x + 1, g_y + 1);
         }
 
     } else if (caprbtn && (WM_RBUTTONDBLCLK == wParam || WM_NCRBUTTONDBLCLK == wParam)) {
