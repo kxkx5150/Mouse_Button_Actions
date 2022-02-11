@@ -4,6 +4,7 @@
 #include <windowsx.h>
 #include "Key.h"
 #include "MouseHook.h"
+#include <crtdbg.h>
 
 HHOOK g_hook = nullptr;
 HWND g_hwnd = nullptr;
@@ -182,6 +183,30 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
     int rval = 0;
     bool enable = false;
 
+
+    if (cancel_lclick == 2) {
+        _RPTN(_CRT_WARN, "%d\n", wParam);
+        rval = 1;
+        cancel_lclick = 3;
+        INPUT Input = { 0 };
+        Input.type = INPUT_MOUSE;
+        Input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
+        Input.mi.dx = 0;
+        Input.mi.dy = g_y;
+        SendInput(1, &Input, sizeof(INPUT));
+    }
+
+    if (cancel_mclick == 2) {
+        cancel_mclick = 3;
+        rval = 1;
+        INPUT Input = { 0 };
+        Input.type = INPUT_MOUSE;
+        Input.mi.dwFlags = MOUSEEVENTF_MIDDLEUP;
+        Input.mi.dx = 0;
+        Input.mi.dy = 0;
+        SendInput(1, &Input, sizeof(INPUT));
+    }
+
     if (caplbtn && (WM_LBUTTONDBLCLK == wParam || WM_NCLBUTTONDBLCLK == wParam)) {
         enable = true;
     } else if (caplbtn && (WM_LBUTTONDOWN == wParam || WM_NCLBUTTONDOWN == wParam)) {
@@ -224,13 +249,27 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
             auto mousell = (LPMSLLHOOKSTRUCT)lParam;
             g_x = mousell->pt.x;
             g_y = mousell->pt.y;
-            SetCursorPos(0, g_y);
+
+
+
         } else if (cancel_lclick == 3) {
             cancel_lclick = 0;
-            SetCursorPos(g_x+1, g_y+1);
+            SetCursorPos(g_x, g_y);
+
+            //cancel_lclick = 0;
+            //SetCursorPos(g_x+1, g_y+1);
+            //rval = 1;
+            //INPUT Input = { 0 };
+            //Input.type = INPUT_MOUSE;
+            //Input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
+            //Input.mi.dx = 0;
+            //Input.mi.dy = g_y;
+            //SendInput(1, &Input, sizeof(INPUT));
+
+
         }
-
-
+    } else if (capxbtn && (WM_MOUSEMOVE == wParam || WM_NCMOUSEMOVE == wParam)) {
+        enable = true;
     } else if (capmbtn && (WM_MBUTTONDBLCLK == wParam || WM_NCMBUTTONDBLCLK == wParam)) {
         enable = true;
     } else if (capmbtn && (WM_MBUTTONDOWN == wParam || WM_NCMBUTTONDOWN == wParam)) {
@@ -280,6 +319,7 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
             g_x = mousell->pt.x;
             g_y = mousell->pt.y;
             SetCursorPos(0, g_y);
+
         } else if (cancel_mclick == 3) {
             cancel_mclick = 0;
             SetCursorPos(g_x + 1, g_y + 1);
@@ -302,6 +342,7 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
         }
 
         if (mouse_lbutton_hold) {
+            cancel_rclick = 1;
             Keyobj* kobj = g_keyopts->get_mouse_lr_button();
             kobj->send_key(lParam);
             cancel_lclick = 1;
@@ -404,30 +445,7 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
         }
         mouse_x_upevent_cancel = false;
 
-    } else if (capxbtn && (WM_MOUSEMOVE == wParam || WM_NCMOUSEMOVE == wParam)) {
-        enable = true;
 
-        if (cancel_lclick == 2) {
-            cancel_lclick = 3;
-            rval = 1;
-            INPUT Input = { 0 };
-            Input.type = INPUT_MOUSE;
-            Input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
-            Input.mi.dx = 0;
-            Input.mi.dy = 0;
-            SendInput(1, &Input, sizeof(INPUT));
-        }
-
-        if (cancel_mclick == 2) {
-            cancel_mclick = 3;
-            rval = 1;
-            INPUT Input = { 0 };
-            Input.type = INPUT_MOUSE;
-            Input.mi.dwFlags = MOUSEEVENTF_MIDDLEUP;
-            Input.mi.dx = 0;
-            Input.mi.dy = 0;
-            SendInput(1, &Input, sizeof(INPUT));
-        }
     } else if (capwheel && WM_MOUSEHWHEEL == wParam) {
         enable = true;
     } else if (capwheel && WM_MOUSEWHEEL == wParam) {
