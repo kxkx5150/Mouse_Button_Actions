@@ -186,6 +186,7 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
 
     if (cancel_lclick == 2) {
         rval = 1;
+        SetCursorPos(0, g_y);
         cancel_lclick = 3;
         INPUT Input = { 0 };
         Input.type = INPUT_MOUSE;
@@ -193,9 +194,9 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
         Input.mi.dx = 0;
         Input.mi.dy = g_y;
         SendInput(1, &Input, sizeof(INPUT));
-    }
-    if (cancel_mclick == 2) {
+    }else if (cancel_mclick == 2) {
         rval = 1;
+        SetCursorPos(0, g_y);
         cancel_mclick = 3;
         INPUT Input = { 0 };
         Input.type = INPUT_MOUSE;
@@ -247,6 +248,7 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
             auto mousell = (LPMSLLHOOKSTRUCT)lParam;
             g_x = mousell->pt.x;
             g_y = mousell->pt.y;
+            //SetCursorPos(0, g_y);
         } else if (cancel_lclick == 3) {
             cancel_lclick = 0;
             SetCursorPos(g_x, g_y);
@@ -294,7 +296,6 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
             rval = 1;
         }
         mouse_m_upevent_cancel = false;
-
 
         if (cancel_mclick == 1) {
             rval = 1;
@@ -362,6 +363,7 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
         mouse_r_upevent_cancel = false;
 
         if (0 < cancel_rclick) {
+            cancel_rclick = 0;
             rupflg = 10000;
             INPUT Input = { 0 };
             Input.type = INPUT_MOUSE;
@@ -399,7 +401,6 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
             SendInput(1, &Input, sizeof(INPUT));
 
             rval = 1;
-            cancel_rclick = 0;
         } else {
             rupflg = 0;
         }
