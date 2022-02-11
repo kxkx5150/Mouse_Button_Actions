@@ -248,7 +248,6 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
             auto mousell = (LPMSLLHOOKSTRUCT)lParam;
             g_x = mousell->pt.x;
             g_y = mousell->pt.y;
-            //SetCursorPos(0, g_y);
         } else if (cancel_lclick == 3) {
             cancel_lclick = 0;
             SetCursorPos(g_x, g_y);
@@ -278,7 +277,7 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
 
         if (mouse_rbutton_hold) {
             Keyobj* kobj = g_keyopts->get_mouse_rm_button();
-            int rval3 = kobj->send_key(lParam);
+            kobj->send_key(lParam);
             cancel_rclick = 1;
             upcancel = true;
         }
