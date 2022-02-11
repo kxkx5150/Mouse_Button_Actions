@@ -362,6 +362,7 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
         mouse_r_upevent_cancel = false;
 
         if (0 < cancel_rclick) {
+            rval = 1;
             cancel_rclick = 0;
             rupflg = 10000;
             INPUT Input = { 0 };
@@ -371,7 +372,7 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
             Input.mi.dy = 0;
             ::SendInput(1, &Input, sizeof(INPUT));
 
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 11; i++) {
                 Sleep(10);
                 ZeroMemory(&Input, sizeof(Input));
                 Input.type = INPUT_KEYBOARD;
@@ -387,7 +388,6 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
                 SendInput(1, &Input, sizeof(INPUT));
             }
 
-            rval = 1;
         } else {
             rupflg = 0;
         }
