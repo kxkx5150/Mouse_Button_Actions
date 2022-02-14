@@ -93,7 +93,6 @@ void CreateChildWindow()
     if (g_wraphwnd)
         return;
 
-    //g_wraphwnd = CreateWindowEx(0, L"wrap_window", L"",
     g_wraphwnd = CreateWindowEx(WS_EX_LAYERED | WS_EX_TOOLWINDOW, L"wrap_window", L"",
         WS_BORDER | WS_DLGFRAME ,
         400, 400, 100, 50,
