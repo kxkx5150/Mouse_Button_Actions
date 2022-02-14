@@ -93,9 +93,8 @@ void CreateChildWindow()
     if (g_wraphwnd)
         return;
 
-    g_wraphwnd = CreateWindowEx(0, L"wrap_window", L"",
-
-    //g_wraphwnd = CreateWindowEx(WS_EX_LAYERED | WS_EX_TOOLWINDOW, L"wrap_window", L"",
+    //g_wraphwnd = CreateWindowEx(0, L"wrap_window", L"",
+    g_wraphwnd = CreateWindowEx(WS_EX_LAYERED | WS_EX_TOOLWINDOW, L"wrap_window", L"",
         WS_BORDER | WS_DLGFRAME ,
         400, 400, 100, 50,
         NULL, NULL, g_hInst, NULL);
@@ -258,7 +257,7 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
 
     if (cancel_lclick == 2) {
         rval = 1;
-        SetCursorPos(g_x, g_y);
+        SetCursorPos(0, g_y);
         cancel_lclick = 3;
         INPUT Input = { 0 };
         Input.type = INPUT_MOUSE;
@@ -266,6 +265,8 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
         Input.mi.dx = 0;
         Input.mi.dy = g_y;
         SendInput(1, &Input, sizeof(INPUT));
+        SetCursorPos(g_x, g_y);
+
     }else if (cancel_mclick == 2) {
         rval = 1;
         SetCursorPos(g_x, g_y);
