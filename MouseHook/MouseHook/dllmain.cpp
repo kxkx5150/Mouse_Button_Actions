@@ -8,6 +8,7 @@
 
 HHOOK g_hook = nullptr;
 HWND g_hwnd = nullptr;
+HWND g_wraphwnd = nullptr;
 HINSTANCE g_hInst = nullptr;
 
 KeyOptions* g_keyopts = nullptr;
@@ -41,7 +42,6 @@ int rupflg = 0;
 int g_rx = 0;
 int g_ry = 0;
 
-void create_wrap_window();
 LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam);
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
 {
@@ -53,6 +53,64 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
         break;
     }
     return TRUE;
+}
+LRESULT CALLBACK ChildWindowProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
+{
+    switch (msg) {
+
+    case WM_PAINT: {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hWnd, &ps);
+        EndPaint(hWnd, &ps);
+    } break;
+
+    default:
+        return (DefWindowProc(hWnd, msg, wp, lp));
+    }
+    return 0;
+}
+ATOM InitChildWindowClass()
+{
+    if (g_wraphwnd)
+        return 0;
+    WNDCLASSEXW wcex;
+    wcex.cbSize = sizeof(WNDCLASSEX);
+    wcex.style = CS_HREDRAW | CS_VREDRAW;
+    wcex.lpfnWndProc = ChildWindowProc;
+    wcex.cbClsExtra = 0;
+    wcex.cbWndExtra = 0;
+    wcex.hInstance = g_hInst;
+    wcex.hIcon = NULL;
+    wcex.hCursor = NULL;
+    wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+    wcex.lpszMenuName = NULL;
+    wcex.lpszClassName = L"wrap_window";
+    wcex.hIconSm = NULL;
+    return RegisterClassExW(&wcex);
+}
+void CreateChildWindow()
+{
+    if (g_wraphwnd)
+        return;
+
+    g_wraphwnd = CreateWindowEx(0, L"wrap_window", L"",
+
+    //g_wraphwnd = CreateWindowEx(WS_EX_LAYERED | WS_EX_TOOLWINDOW, L"wrap_window", L"",
+        WS_BORDER | WS_DLGFRAME ,
+        400, 400, 100, 50,
+        NULL, NULL, g_hInst, NULL);
+    ShowWindow(g_wraphwnd, SW_HIDE);
+}
+void show_wrap_window()
+{
+    ShowWindow(g_wraphwnd, SW_SHOW);
+    UpdateWindow(g_wraphwnd);
+    SetWindowPos(g_wraphwnd, HWND_TOPMOST, g_x - 40, g_y - 10, 0, 0, (SWP_NOSIZE));
+}
+void hide_wrap_window()
+{
+    ShowWindow(g_wraphwnd, SW_HIDE);
+    UpdateWindow(g_wraphwnd);
 }
 void __cdecl start_hook(HINSTANCE hInstance, HWND hwnd, bool lbtn, bool mbtn, bool rbtn, bool xbtn, bool wheel, bool move)
 {
@@ -69,6 +127,9 @@ void __cdecl start_hook(HINSTANCE hInstance, HWND hwnd, bool lbtn, bool mbtn, bo
         g_hwnd = hwnd;
         g_hook = SetWindowsHookEx(WH_MOUSE_LL, hook_proc, nullptr, 0);
         g_hInst = hInstance;
+
+        InitChildWindowClass();
+        CreateChildWindow();
     }
 }
 void __cdecl end_hook()
@@ -181,21 +242,8 @@ int click_xbutton(int state, WPARAM wParam, LPARAM lParam)
 }
 
 
-void create_wrap_window()
-{
-    HWND g_wrapwindow = CreateWindow(L"wrap_window", L"", WS_OVERLAPPEDWINDOW,
-        100, 100, 200, 200,
-        NULL, NULL,g_hInst, NULL);
-    ShowWindow(g_wrapwindow, SW_SHOW);
-}
-void show_wrap_window()
-{
-    SetWindowPos(g_hwnd, HWND_TOPMOST, g_x - 10, g_y - 10, 0, 0, (SWP_NOSIZE));
-}
-void hide_wrap_window()
-{
-    SetWindowPos(g_hwnd, HWND_BOTTOM, g_x - 40, g_y - 10, 0, 0, (SWP_NOSIZE));
-}
+
+
 
 
 
@@ -207,7 +255,6 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
         return CallNextHookEx(g_hook, code, wParam, lParam);
     int rval = 0;
     bool enable = false;
-
 
     if (cancel_lclick == 2) {
         rval = 1;
@@ -221,7 +268,7 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
         SendInput(1, &Input, sizeof(INPUT));
     }else if (cancel_mclick == 2) {
         rval = 1;
-        SetCursorPos(0, g_y);
+        SetCursorPos(g_x, g_y);
         cancel_mclick = 3;
         INPUT Input = { 0 };
         Input.type = INPUT_MOUSE;
@@ -331,9 +378,13 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
             auto mousell = (LPMSLLHOOKSTRUCT)lParam;
             g_x = mousell->pt.x;
             g_y = mousell->pt.y;
+            show_wrap_window();
+
         } else if (cancel_mclick == 3) {
             cancel_mclick = 0;
             SetCursorPos(g_x, g_y);
+            hide_wrap_window();
+
         }
 
     } else if (caprbtn && (WM_RBUTTONDBLCLK == wParam || WM_NCRBUTTONDBLCLK == wParam)) {
