@@ -82,8 +82,11 @@ HFONT create_font(int fontsize);
 void get_options();
 HWND create_edittext(HWND hParent, int nX, int nY, int nWidth, int nHeight, int id);
 bool set_regkey(HKEY hKey, std::wstring keystr);
+ATOM InitChildWindowClass();
+HWND CreateChildWindow();
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK About(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK ChildWindowProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hpins, _In_ LPWSTR lccmd, _In_ int mcmd)
 {
@@ -96,9 +99,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hpins, _In_ L
         return FALSE;
     }
 
+
+
+
+    InitChildWindowClass();
+    CreateChildWindow();
+
+
+
+
+
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_MOUSEHOOKAPP));
     create_gui();
-    start_hook(g_hwnd, true, true, true, true, true, false);
+    start_hook(hInstance, g_hwnd, true, true, true, true, true, false);
     set_regkey(HKEY_CURRENT_USER, L"SOFTWARE\\Mouse_Button_Actions_kxkx5150");
     get_options();
 
@@ -111,6 +124,34 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hpins, _In_ L
     }
     end_hook();
     return (int)msg.wParam;
+}
+ATOM InitChildWindowClass()
+{
+    WNDCLASSEXW wcex;
+    wcex.cbSize = sizeof(WNDCLASSEX);
+    wcex.style = CS_HREDRAW | CS_VREDRAW;
+    wcex.lpfnWndProc = ChildWindowProc;
+    wcex.cbClsExtra = 0;
+    wcex.cbWndExtra = 0;
+    wcex.hInstance = hInst;
+    wcex.hIcon = NULL;
+    wcex.hCursor = NULL;
+    wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+    wcex.lpszMenuName = NULL;
+    wcex.lpszClassName = L"wrap_window";
+    wcex.hIconSm = NULL;
+    return RegisterClassExW(&wcex);
+}
+HWND CreateChildWindow()
+{
+    HWND hwnd = CreateWindow(L"wrap_window", L"",
+        WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT,0,100,100,
+        NULL,NULL, hInst,NULL);
+
+    ShowWindow(hwnd, SW_SHOW);
+    UpdateWindow(hwnd);
+    return hwnd;
 }
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
@@ -142,6 +183,15 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     UpdateWindow(g_hwnd);
     return TRUE;
 }
+
+
+
+
+
+
+
+
+
 HWND create_button(HWND hParent, int nX, int nY, int nWidth, int nHeight, int id, TCHAR* txt)
 {
     return CreateWindow(
@@ -917,4 +967,22 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     }
     return (INT_PTR)FALSE;
+}
+LRESULT CALLBACK ChildWindowProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
+{
+    switch (msg) {
+
+    case WM_PAINT: {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hWnd, &ps);
+        EndPaint(hWnd, &ps);
+    } break;
+
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        break;
+    default:
+        return (DefWindowProc(hWnd, msg, wp, lp));
+    }
+    return 0;
 }

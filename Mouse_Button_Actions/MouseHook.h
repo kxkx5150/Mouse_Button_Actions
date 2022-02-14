@@ -35,7 +35,7 @@
 #define VK_Z 0x5A
 
 
-__DLL_PORT void __cdecl start_hook(HWND hwnd, bool lbtn, bool mbtn, bool rbtn, bool xbtn, bool wheel, bool move);
+__DLL_PORT void __cdecl start_hook(HINSTANCE hInstance, HWND hwnd, bool lbtn, bool mbtn, bool rbtn, bool xbtn, bool wheel, bool move);
 __DLL_PORT void __cdecl end_hook();
 
 __DLL_PORT void __cdecl set_mouse_left_button(int index, int keycode, bool ctrl, bool alt, bool shift);

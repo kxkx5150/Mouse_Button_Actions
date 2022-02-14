@@ -8,6 +8,8 @@
 
 HHOOK g_hook = nullptr;
 HWND g_hwnd = nullptr;
+HINSTANCE g_hInst = nullptr;
+
 KeyOptions* g_keyopts = nullptr;
 
 bool caplbtn = false;
@@ -39,6 +41,7 @@ int rupflg = 0;
 int g_rx = 0;
 int g_ry = 0;
 
+void create_wrap_window();
 LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam);
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
 {
@@ -51,7 +54,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
     }
     return TRUE;
 }
-void __cdecl start_hook(HWND hwnd, bool lbtn, bool mbtn, bool rbtn, bool xbtn, bool wheel, bool move)
+void __cdecl start_hook(HINSTANCE hInstance, HWND hwnd, bool lbtn, bool mbtn, bool rbtn, bool xbtn, bool wheel, bool move)
 {
     if (!g_hook) {
         if (!g_keyopts)
@@ -65,6 +68,7 @@ void __cdecl start_hook(HWND hwnd, bool lbtn, bool mbtn, bool rbtn, bool xbtn, b
 
         g_hwnd = hwnd;
         g_hook = SetWindowsHookEx(WH_MOUSE_LL, hook_proc, nullptr, 0);
+        g_hInst = hInstance;
     }
 }
 void __cdecl end_hook()
@@ -176,6 +180,27 @@ int click_xbutton(int state, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
+
+void create_wrap_window()
+{
+    HWND g_wrapwindow = CreateWindow(L"wrap_window", L"", WS_OVERLAPPEDWINDOW,
+        100, 100, 200, 200,
+        NULL, NULL,g_hInst, NULL);
+    ShowWindow(g_wrapwindow, SW_SHOW);
+}
+void show_wrap_window()
+{
+    SetWindowPos(g_hwnd, HWND_TOPMOST, g_x - 10, g_y - 10, 0, 0, (SWP_NOSIZE));
+}
+void hide_wrap_window()
+{
+    SetWindowPos(g_hwnd, HWND_BOTTOM, g_x - 40, g_y - 10, 0, 0, (SWP_NOSIZE));
+}
+
+
+
+
+
 LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
 {
     if (!g_hwnd || code < 0)
@@ -186,7 +211,7 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
 
     if (cancel_lclick == 2) {
         rval = 1;
-        SetCursorPos(0, g_y);
+        SetCursorPos(g_x, g_y);
         cancel_lclick = 3;
         INPUT Input = { 0 };
         Input.type = INPUT_MOUSE;
@@ -248,9 +273,13 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
             auto mousell = (LPMSLLHOOKSTRUCT)lParam;
             g_x = mousell->pt.x;
             g_y = mousell->pt.y;
+            show_wrap_window();
+
         } else if (cancel_lclick == 3) {
             cancel_lclick = 0;
             SetCursorPos(g_x, g_y);
+            hide_wrap_window();
+
         }
     } else if (capxbtn && (WM_MOUSEMOVE == wParam || WM_NCMOUSEMOVE == wParam)) {
         enable = true;
