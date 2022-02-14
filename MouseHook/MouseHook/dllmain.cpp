@@ -267,6 +267,17 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
         SendInput(1, &Input, sizeof(INPUT));
         SetCursorPos(g_x, g_y);
 
+    } else if (cancel_lclick == 12) {
+        rval = 1;
+        SetCursorPos(g_x, g_y);
+        cancel_lclick = 3;
+        INPUT Input = { 0 };
+        Input.type = INPUT_MOUSE;
+        Input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
+        Input.mi.dx = 0;
+        Input.mi.dy = g_y;
+        SendInput(1, &Input, sizeof(INPUT));
+
     }else if (cancel_mclick == 2) {
         rval = 1;
         SetCursorPos(g_x, g_y);
@@ -318,6 +329,13 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
         if (cancel_lclick == 1) {
             rval = 1;
             cancel_lclick = 2;
+            auto mousell = (LPMSLLHOOKSTRUCT)lParam;
+            g_x = mousell->pt.x;
+            g_y = mousell->pt.y;
+            show_wrap_window();
+        } else if (cancel_lclick == 11) {
+            rval = 1;
+            cancel_lclick = 12;
             auto mousell = (LPMSLLHOOKSTRUCT)lParam;
             g_x = mousell->pt.x;
             g_y = mousell->pt.y;
@@ -408,7 +426,7 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
             cancel_rclick = 1;
             Keyobj* kobj = g_keyopts->get_mouse_lr_button();
             kobj->send_key(lParam);
-            cancel_lclick = 1;
+            cancel_lclick = 11;
             upcancel = true;
         }
         if (mouse_mbutton_hold) {
