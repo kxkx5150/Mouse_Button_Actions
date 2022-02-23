@@ -36,14 +36,70 @@ public:
         key.shift = shift;
         m_keys.push_back(key);
     }
+    void key_down(Key key)
+    {
+        INPUT ip;
+        ip.type = INPUT_KEYBOARD;
+        ip.ki.wScan = 0;
+        ip.ki.time = 0;
+        ip.ki.dwExtraInfo = 0;
+
+        if (key.ctrl) {
+            ip.ki.wVk = VK_CONTROL;
+            ip.ki.dwFlags = 0;
+            SendInput(1, &ip, sizeof(INPUT));
+        }
+        if (key.alt) {
+            ip.ki.wVk = VK_MENU;
+            ip.ki.dwFlags = 0;
+            SendInput(1, &ip, sizeof(INPUT));
+        }
+        if (key.shift) {
+            ip.ki.wVk = VK_SHIFT;
+            ip.ki.dwFlags = 0;
+            SendInput(1, &ip, sizeof(INPUT));
+        }
+
+        ip.ki.wVk = key.keycode;
+        ip.ki.dwFlags = 0;
+        SendInput(1, &ip, sizeof(INPUT));
+
+        ip.ki.wVk = key.keycode;
+        ip.ki.dwFlags = KEYEVENTF_KEYUP;
+        SendInput(1, &ip, sizeof(INPUT));
+
+        if (key.ctrl) {
+            ip.ki.wVk = VK_CONTROL;
+            ip.ki.dwFlags = KEYEVENTF_KEYUP;
+            SendInput(1, &ip, sizeof(INPUT));
+        }
+        if (key.alt) {
+            ip.ki.wVk = VK_MENU;
+            ip.ki.dwFlags = KEYEVENTF_KEYUP;
+            SendInput(1, &ip, sizeof(INPUT));
+        }
+        if (key.shift) {
+            ip.ki.wVk = VK_SHIFT;
+            ip.ki.dwFlags = KEYEVENTF_KEYUP;
+            SendInput(1, &ip, sizeof(INPUT));
+        }
+    }
+    void mouse_down(Key key)
+    {
+        if (key.keycode == WM_XBUTTONDOWN) {
+            key.keycode = VK_BROWSER_FORWARD;
+            key_down(key);
+        } else if (key.keycode == WM_XBUTTONDOWN + 1) {
+            key.keycode = VK_BROWSER_BACK;
+            key_down(key);
+        }
+    }
     int send_key(LPARAM lParam)
     {
         if (!enable)
             return 0;
         if (m_keys.size() < 1)
             return 0;
-
-        INPUT ip;
 
         for (int i = 0; i < m_keys.size(); i++) {
             Key key = m_keys[i];
@@ -53,50 +109,10 @@ public:
             if (key.keycode == 1)
                 return 1;
 
-            /// Keyboard
-            ip.type = INPUT_KEYBOARD;
-            ip.ki.wScan = 0;
-            ip.ki.time = 0;
-            ip.ki.dwExtraInfo = 0;
-
-            if (key.ctrl) {
-                ip.ki.wVk = VK_CONTROL;
-                ip.ki.dwFlags = 0;
-                SendInput(1, &ip, sizeof(INPUT));
-            }
-            if (key.alt) {
-                ip.ki.wVk = VK_MENU;
-                ip.ki.dwFlags = 0;
-                SendInput(1, &ip, sizeof(INPUT));
-            }
-            if (key.shift) {
-                ip.ki.wVk = VK_SHIFT;
-                ip.ki.dwFlags = 0;
-                SendInput(1, &ip, sizeof(INPUT));
-            }
-
-            ip.ki.wVk = key.keycode;
-            ip.ki.dwFlags = 0;
-            SendInput(1, &ip, sizeof(INPUT));
-
-            ip.ki.wVk = key.keycode;
-            ip.ki.dwFlags = KEYEVENTF_KEYUP;
-            SendInput(1, &ip, sizeof(INPUT));
-
-            if (key.ctrl) {
-                ip.ki.wVk = VK_CONTROL;
-                ip.ki.dwFlags = KEYEVENTF_KEYUP;
-                SendInput(1, &ip, sizeof(INPUT));
-            }
-            if (key.alt) {
-                ip.ki.wVk = VK_MENU;
-                ip.ki.dwFlags = KEYEVENTF_KEYUP;
-                SendInput(1, &ip, sizeof(INPUT));
-            }
-            if (key.shift) {
-                ip.ki.wVk = VK_SHIFT;
-                ip.ki.dwFlags = KEYEVENTF_KEYUP;
-                SendInput(1, &ip, sizeof(INPUT));
+            if (key.keycode == WM_XBUTTONDOWN || key.keycode == WM_XBUTTONDOWN + 1) {      
+                mouse_down(key);
+            } else {
+                key_down(key);
             }
         }
 
@@ -168,7 +184,7 @@ public:
 
     void set_mouse_left_button(int index, int keycode, bool ctrl, bool alt, bool shift)
     {
-        //m_leftbutton->set_key(index, keycode , ctrl, alt, shift);
+        // m_leftbutton->set_key(index, keycode , ctrl, alt, shift);
     }
     void set_mouse_middle_button(int index, int keycode, bool ctrl, bool alt, bool shift)
     {
@@ -290,4 +306,3 @@ public:
 
 private:
 };
-

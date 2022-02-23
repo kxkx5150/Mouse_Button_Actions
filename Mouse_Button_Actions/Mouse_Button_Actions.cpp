@@ -348,7 +348,7 @@ void create_option_control(HWND hDlg)
     HWND keylisthwnd = CreateWindow(
         L"COMBOBOX", NULL,
         WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_CLIPSIBLINGS | WS_VSCROLL,
-        28, 20, 150, 200,
+        28, 20, 150, 400,
         hDlg, (HMENU)IDD_STR_SET_COMBOBOX, hInst, NULL);
     TCHAR i;
     int selidx = 0;
@@ -379,13 +379,18 @@ void create_option_control(HWND hDlg)
     SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"DOWN");
     SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"END");
     SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"HOME");
-    SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"BACK");
+    SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"BACKSPACE");
     SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"TAB");
     SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"SPACE");
     SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"PAGEUP");
     SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"PAGEDOWN");
-    SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"NONE");
+    SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"FORWARD");
+    SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"BACK");
 
+    SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"VOLUMEUP");
+    SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"VOLUMEDOWN");
+
+    SendMessage(keylisthwnd, CB_ADDSTRING, 0, (LPARAM)L"NONE");
     SendMessage(keylisthwnd, CB_INSERTSTRING, 0, (LPARAM)L"");
 
     if (keyobj.keycode == 0x25) {
@@ -410,8 +415,19 @@ void create_option_control(HWND hDlg)
         selidx = itemcnt + 10;
     } else if (keyobj.keycode == 0x22) {
         selidx = itemcnt + 11;
-    } else if (keyobj.keycode == 1) {
+    } else if (keyobj.keycode == WM_XBUTTONDOWN) {
         selidx = itemcnt + 12;
+    } else if (keyobj.keycode == WM_XBUTTONDOWN+1) {
+        selidx = itemcnt + 13;
+
+    } else if (keyobj.keycode == 0xAF) {
+        selidx = itemcnt + 14;
+    } else if (keyobj.keycode == 0xAE) {
+        selidx = itemcnt + 15;
+
+
+    } else if (keyobj.keycode == 1) {
+        selidx = itemcnt + 16;
     }
 
     SendMessage(keylisthwnd, CB_SETCURSEL, selidx, 0);
@@ -652,8 +668,8 @@ void store_key(HWND hDlg)
     HWND althwnd = GetDlgItem(hDlg, IDD_ALT_SET_COMBOBOX);
     HWND shifthwnd = GetDlgItem(hDlg, IDD_SHIFT_SET_COMBOBOX);
 
-    TCHAR keytxt[10];
-    GetWindowText(keylisthwnd, keytxt, 10);
+    TCHAR keytxt[20];
+    GetWindowText(keylisthwnd, keytxt, 20);
     TCHAR ctrltxt[10];
     GetWindowText(ctrlhwnd, ctrltxt, 10);
     TCHAR alttxt[10];
@@ -679,7 +695,7 @@ void store_key(HWND hDlg)
             keycode = 0x23;
         } else if (keystr.find(L"HOME") == 0) {
             keycode = 0x24;
-        } else if (keystr.find(L"BACK") == 0) {
+        } else if (keystr.find(L"BACKSPACE") == 0) {
             keycode = 0x08;
         } else if (keystr.find(L"TAB") == 0) {
             keycode = 0x09;
@@ -689,8 +705,16 @@ void store_key(HWND hDlg)
             keycode = 0x21;
         } else if (keystr.find(L"PAGEDOWN") == 0) {
             keycode = 0x22;
+        } else if (keystr.find(L"FORWARD") == 0) {
+            keycode = WM_XBUTTONDOWN;
+        } else if (keystr.find(L"BACK") == 0) {
+            keycode = WM_XBUTTONDOWN+1;
         } else if (keystr.find(L"NONE") == 0) {
             keycode = 1;
+        } else if (keystr.find(L"VOLUMEUP") == 0) {
+            keycode = 0xAF;
+        } else if (keystr.find(L"VOLUMEDOWN") == 0) {
+            keycode = 0xAE;
 
         } else {
             keycode = *keytxt;

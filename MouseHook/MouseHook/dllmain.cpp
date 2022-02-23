@@ -1,10 +1,10 @@
 #include "pch.h"
+#include <crtdbg.h>
 #include <string>
 #include <vector>
 #include <windowsx.h>
 #include "Key.h"
 #include "MouseHook.h"
-#include <crtdbg.h>
 
 HHOOK g_hook = nullptr;
 HWND g_hwnd = nullptr;
@@ -94,7 +94,7 @@ void CreateChildWindow()
         return;
 
     g_wraphwnd = CreateWindowEx(WS_EX_LAYERED | WS_EX_TOOLWINDOW, L"wrap_window", L"",
-        WS_BORDER | WS_DLGFRAME ,
+        WS_BORDER | WS_DLGFRAME,
         400, 400, 100, 50,
         NULL, NULL, g_hInst, NULL);
     ShowWindow(g_wraphwnd, SW_HIDE);
@@ -223,9 +223,7 @@ int click_xbutton(int state, WPARAM wParam, LPARAM lParam)
     switch (HIWORD(pmsllhook->mouseData)) {
     case XBUTTON1: {
         Keyobj* kobj = g_keyopts->get_mouse_x1_button();
-        int rval = kobj->send_key(lParam);
-
-        return rval;
+        return kobj->send_key(lParam);
     } break;
 
     case XBUTTON2: {
@@ -238,15 +236,6 @@ int click_xbutton(int state, WPARAM wParam, LPARAM lParam)
     }
     return 0;
 }
-
-
-
-
-
-
-
-
-
 LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
 {
     if (!g_hwnd || code < 0)
@@ -254,7 +243,8 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
     int rval = 0;
     bool enable = false;
 
-    if (cancel_lclick == 2) {
+    if (rupflg == 10000) {
+    } else if (cancel_lclick == 2) {
         rval = 1;
         SetCursorPos(0, g_y);
         cancel_lclick = 3;
@@ -277,7 +267,7 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
         Input.mi.dy = g_y;
         SendInput(1, &Input, sizeof(INPUT));
 
-    }else if (cancel_mclick == 2) {
+    } else if (cancel_mclick == 2) {
         rval = 1;
         SetCursorPos(g_x, g_y);
         cancel_mclick = 3;
@@ -344,7 +334,6 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
             cancel_lclick = 0;
             SetCursorPos(g_x, g_y);
             hide_wrap_window();
-
         }
     } else if (capxbtn && (WM_MOUSEMOVE == wParam || WM_NCMOUSEMOVE == wParam)) {
         enable = true;
@@ -402,7 +391,6 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
             cancel_mclick = 0;
             SetCursorPos(g_x, g_y);
             hide_wrap_window();
-
         }
 
     } else if (caprbtn && (WM_RBUTTONDBLCLK == wParam || WM_NCRBUTTONDBLCLK == wParam)) {
@@ -470,22 +458,20 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
             Input.mi.dy = 0;
             ::SendInput(1, &Input, sizeof(INPUT));
 
-            for (int i = 0; i < 11; i++) {
-                Sleep(10);
-                ZeroMemory(&Input, sizeof(Input));
-                Input.type = INPUT_KEYBOARD;
-                Input.ki.wScan = 0;
-                Input.ki.time = 0;
-                Input.ki.dwExtraInfo = 0;
-                Input.ki.wVk = VK_ESCAPE;
+            ZeroMemory(&Input, sizeof(Input));
+            Input.type = INPUT_KEYBOARD;
+            Input.ki.wScan = 0;
+            Input.ki.time = 0;
+            Input.ki.dwExtraInfo = 0;
+            Input.ki.wVk = VK_ESCAPE;
+
+            for (int i = 0; i < 20; i++) {
+                Sleep(6);
                 Input.ki.dwFlags = 0;
                 SendInput(1, &Input, sizeof(INPUT));
-                Sleep(20);
-                Input.ki.wVk = VK_ESCAPE;
                 Input.ki.dwFlags = KEYEVENTF_KEYUP;
                 SendInput(1, &Input, sizeof(INPUT));
             }
-
         } else {
             rupflg = 0;
         }
@@ -506,7 +492,6 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
             rval = 1;
         }
         mouse_x_upevent_cancel = false;
-
 
     } else if (capwheel && WM_MOUSEHWHEEL == wParam) {
         enable = true;
