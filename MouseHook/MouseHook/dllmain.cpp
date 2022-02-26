@@ -465,7 +465,7 @@ LRESULT CALLBACK hook_proc(int code, WPARAM wParam, LPARAM lParam)
             Input.ki.dwExtraInfo = 0;
             Input.ki.wVk = VK_ESCAPE;
 
-            for (int i = 0; i < 20; i++) {
+            for (int i = 0; i < 30; i++) {
                 Sleep(6);
                 Input.ki.dwFlags = 0;
                 SendInput(1, &Input, sizeof(INPUT));
