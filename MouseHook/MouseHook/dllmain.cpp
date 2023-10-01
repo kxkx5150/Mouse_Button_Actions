@@ -138,83 +138,83 @@ void __cdecl end_hook()
     g_hwnd = nullptr;
     delete g_keyopts;
 }
-void __cdecl set_mouse_left_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+void __cdecl set_mouse_left_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
 {
     if (g_keyopts)
-        g_keyopts->set_mouse_left_button(index, keycode, ctrl, alt, shift);
+        g_keyopts->set_mouse_left_button(index, keycode, ctrl, alt, shift, win);
 }
-void __cdecl set_mouse_middle_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+void __cdecl set_mouse_middle_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
 {
     if (g_keyopts)
-        g_keyopts->set_mouse_middle_button(index, keycode, ctrl, alt, shift);
+        g_keyopts->set_mouse_middle_button(index, keycode, ctrl, alt, shift, win);
 }
-void __cdecl set_mouse_right_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+void __cdecl set_mouse_right_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
 {
     if (g_keyopts)
-        g_keyopts->set_mouse_right_button(index, keycode, ctrl, alt, shift);
+        g_keyopts->set_mouse_right_button(index, keycode, ctrl, alt, shift, win);
     OutputDebugString(L"");
 }
-void __cdecl set_mouse_x1_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+void __cdecl set_mouse_x1_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
 {
     if (g_keyopts)
-        g_keyopts->set_mouse_x1_button(index, keycode, ctrl, alt, shift);
+        g_keyopts->set_mouse_x1_button(index, keycode, ctrl, alt, shift, win);
 }
-void __cdecl set_mouse_x2_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+void __cdecl set_mouse_x2_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
 {
     if (g_keyopts)
-        g_keyopts->set_mouse_x2_button(index, keycode, ctrl, alt, shift);
+        g_keyopts->set_mouse_x2_button(index, keycode, ctrl, alt, shift, win);
 }
-void __cdecl set_mouse_lr_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+void __cdecl set_mouse_lr_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
 {
     if (g_keyopts)
-        g_keyopts->set_mouse_lr_button(index, keycode, ctrl, alt, shift);
+        g_keyopts->set_mouse_lr_button(index, keycode, ctrl, alt, shift, win);
 }
-void __cdecl set_mouse_rl_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+void __cdecl set_mouse_rl_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
 {
     if (g_keyopts)
-        g_keyopts->set_mouse_rl_button(index, keycode, ctrl, alt, shift);
+        g_keyopts->set_mouse_rl_button(index, keycode, ctrl, alt, shift, win);
 }
-void __cdecl set_mouse_rm_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+void __cdecl set_mouse_rm_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
 {
     if (g_keyopts)
-        g_keyopts->set_mouse_rm_button(index, keycode, ctrl, alt, shift);
-}
-
-void __cdecl set_mouse_ml_button(int index, int keycode, bool ctrl, bool alt, bool shift)
-{
-    if (g_keyopts)
-        g_keyopts->set_mouse_ml_button(index, keycode, ctrl, alt, shift);
-}
-void __cdecl set_mouse_mr_button(int index, int keycode, bool ctrl, bool alt, bool shift)
-{
-    if (g_keyopts)
-        g_keyopts->set_mouse_mr_button(index, keycode, ctrl, alt, shift);
-}
-void __cdecl set_mouse_lm_button(int index, int keycode, bool ctrl, bool alt, bool shift)
-{
-    if (g_keyopts)
-        g_keyopts->set_mouse_lm_button(index, keycode, ctrl, alt, shift);
+        g_keyopts->set_mouse_rm_button(index, keycode, ctrl, alt, shift, win);
 }
 
-void __cdecl set_mouse_lu_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+void __cdecl set_mouse_ml_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
 {
     if (g_keyopts)
-        g_keyopts->set_mouse_lu_button(index, keycode, ctrl, alt, shift);
+        g_keyopts->set_mouse_ml_button(index, keycode, ctrl, alt, shift, win);
 }
-void __cdecl set_mouse_ld_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+void __cdecl set_mouse_mr_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
 {
     if (g_keyopts)
-        g_keyopts->set_mouse_ld_button(index, keycode, ctrl, alt, shift);
+        g_keyopts->set_mouse_mr_button(index, keycode, ctrl, alt, shift, win);
 }
-void __cdecl set_mouse_ru_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+void __cdecl set_mouse_lm_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
 {
     if (g_keyopts)
-        g_keyopts->set_mouse_ru_button(index, keycode, ctrl, alt, shift);
+        g_keyopts->set_mouse_lm_button(index, keycode, ctrl, alt, shift, win);
 }
-void __cdecl set_mouse_rd_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+
+void __cdecl set_mouse_lu_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
 {
     if (g_keyopts)
-        g_keyopts->set_mouse_rd_button(index, keycode, ctrl, alt, shift);
+        g_keyopts->set_mouse_lu_button(index, keycode, ctrl, alt, shift, win);
+}
+void __cdecl set_mouse_ld_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
+{
+    if (g_keyopts)
+        g_keyopts->set_mouse_ld_button(index, keycode, ctrl, alt, shift, win);
+}
+void __cdecl set_mouse_ru_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
+{
+    if (g_keyopts)
+        g_keyopts->set_mouse_ru_button(index, keycode, ctrl, alt, shift, win);
+}
+void __cdecl set_mouse_rd_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
+{
+    if (g_keyopts)
+        g_keyopts->set_mouse_rd_button(index, keycode, ctrl, alt, shift, win);
 }
 
 int click_xbutton(int state, WPARAM wParam, LPARAM lParam)

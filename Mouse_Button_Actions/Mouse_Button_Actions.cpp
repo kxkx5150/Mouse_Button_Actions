@@ -41,6 +41,7 @@ struct KeyObj {
     bool alt = false;
     bool ctrl = false;
     bool shift = false;
+    bool win = false;
     TCHAR keycode = 0;
 };
 
@@ -459,8 +460,19 @@ void create_option_control(HWND hDlg)
         SendMessage(shifthwnd, CB_SETCURSEL, 0, 0);
     }
 
-    create_button(hDlg, 14, 220, 90, 26, IDD_SET_OKBUTTON, (TCHAR*)L"OK");
-    create_button(hDlg, 106, 220, 90, 26, IDD_SET_CANCELBUTTON, (TCHAR*)L"Cancel");
+
+    HWND winhwnd = create_combobox(hDlg, 28, 160, 150, 100, IDD_WIN_SET_COMBOBOX);
+    SendMessage(winhwnd, CB_INSERTSTRING, 0, (LPARAM)L"WIN");
+    SendMessage(winhwnd, CB_INSERTSTRING, 0, (LPARAM)L"");
+    if (keyobj.win) {
+        SendMessage(winhwnd, CB_SETCURSEL, 1, 0);
+    }
+    else {
+        SendMessage(winhwnd, CB_SETCURSEL, 0, 0);
+    }
+
+    create_button(hDlg, 14, 255, 90, 26, IDD_SET_OKBUTTON, (TCHAR*)L"OK");
+    create_button(hDlg, 106, 255, 90, 26, IDD_SET_CANCELBUTTON, (TCHAR*)L"Cancel");
 }
 bool set_regkey(HKEY hKey, std::wstring keystr)
 {
@@ -527,138 +539,152 @@ int setStartUp(HWND hWnd)
     RegCloseKey(newValue);
     return 0;
 }
-void send_key_option(int keyobjid, int index, int keycode, bool ctrl, bool alt, bool shift)
+void send_key_option(int keyobjid, int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
 {
     if (keyobjid == IDD_MIDDLE_SET_BUTTON) {
-        set_mouse_middle_button(0, keycode, ctrl, alt, shift);
+        set_mouse_middle_button(0, keycode, ctrl, alt, shift, win);
 
     } else if (keyobjid == IDD_RIGHT_SET_BUTTON) {
-        set_mouse_right_button(0, keycode, ctrl, alt, shift);
+        set_mouse_right_button(0, keycode, ctrl, alt, shift, win);
 
     } else if (keyobjid == IDD_X1_SET_BUTTON) {
-        set_mouse_x1_button(0, keycode, ctrl, alt, shift);
+        set_mouse_x1_button(0, keycode, ctrl, alt, shift, win);
 
     } else if (keyobjid == IDD_X2_SET_BUTTON) {
-        set_mouse_x2_button(0, keycode, ctrl, alt, shift);
+        set_mouse_x2_button(0, keycode, ctrl, alt, shift, win);
 
     } else if (keyobjid == IDD_LR_SET_BUTTON) {
-        set_mouse_lr_button(0, keycode, ctrl, alt, shift);
+        set_mouse_lr_button(0, keycode, ctrl, alt, shift, win);
 
     } else if (keyobjid == IDD_RL_SET_BUTTON) {
-        set_mouse_rl_button(0, keycode, ctrl, alt, shift);
+        set_mouse_rl_button(0, keycode, ctrl, alt, shift, win);
     } else if (keyobjid == IDD_RM_SET_BUTTON) {
-        set_mouse_rm_button(0, keycode, ctrl, alt, shift);
+        set_mouse_rm_button(0, keycode, ctrl, alt, shift, win);
     } else if (keyobjid == IDD_ML_SET_BUTTON) {
-        set_mouse_ml_button(0, keycode, ctrl, alt, shift);
+        set_mouse_ml_button(0, keycode, ctrl, alt, shift, win);
     } else if (keyobjid == IDD_MR_SET_BUTTON) {
-        set_mouse_mr_button(0, keycode, ctrl, alt, shift);
+        set_mouse_mr_button(0, keycode, ctrl, alt, shift, win);
     } else if (keyobjid == IDD_LM_SET_BUTTON) {
-        set_mouse_lm_button(0, keycode, ctrl, alt, shift);
+        set_mouse_lm_button(0, keycode, ctrl, alt, shift, win);
     } else if (keyobjid == IDD_LU_SET_BUTTON) {
-        set_mouse_lu_button(0, keycode, ctrl, alt, shift);
+        set_mouse_lu_button(0, keycode, ctrl, alt, shift, win);
     } else if (keyobjid == IDD_LD_SET_BUTTON) {
-        set_mouse_ld_button(0, keycode, ctrl, alt, shift);
+        set_mouse_ld_button(0, keycode, ctrl, alt, shift, win);
     } else if (keyobjid == IDD_RU_SET_BUTTON) {
-        set_mouse_ru_button(0, keycode, ctrl, alt, shift);
+        set_mouse_ru_button(0, keycode, ctrl, alt, shift, win);
     } else if (keyobjid == IDD_RD_SET_BUTTON) {
-        set_mouse_rd_button(0, keycode, ctrl, alt, shift);
+        set_mouse_rd_button(0, keycode, ctrl, alt, shift, win);
     }
 }
-void set_option_obj(int keyobjid, int keycode, bool ctrl, bool alt, bool shift)
+void set_option_obj(int keyobjid, int keycode, bool ctrl, bool alt, bool shift, bool win)
 {
     if (keyobjid == IDD_MIDDLE_SET_BUTTON) {
         keyobjs->m_middle_key.keycode = keycode;
         keyobjs->m_middle_key.ctrl = ctrl;
         keyobjs->m_middle_key.alt = alt;
         keyobjs->m_middle_key.shift = shift;
-        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift);
+        keyobjs->m_middle_key.win = win;
+        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift, win);
 
     } else if (keyobjid == IDD_RIGHT_SET_BUTTON) {
         keyobjs->m_right_key.keycode = keycode;
         keyobjs->m_right_key.ctrl = ctrl;
         keyobjs->m_right_key.alt = alt;
         keyobjs->m_right_key.shift = shift;
-        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift);
+        keyobjs->m_right_key.win = win;
+        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift, win);
 
     } else if (keyobjid == IDD_X1_SET_BUTTON) {
         keyobjs->m_x1_key.keycode = keycode;
         keyobjs->m_x1_key.ctrl = ctrl;
         keyobjs->m_x1_key.alt = alt;
         keyobjs->m_x1_key.shift = shift;
-        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift);
+        keyobjs->m_x1_key.win = win;
+        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift, win);
 
     } else if (keyobjid == IDD_X2_SET_BUTTON) {
         keyobjs->m_x2_key.keycode = keycode;
         keyobjs->m_x2_key.ctrl = ctrl;
         keyobjs->m_x2_key.alt = alt;
         keyobjs->m_x2_key.shift = shift;
-        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift);
+        keyobjs->m_x2_key.win = win;
+        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift, win);
 
     } else if (keyobjid == IDD_LR_SET_BUTTON) {
         keyobjs->m_lr_key.keycode = keycode;
         keyobjs->m_lr_key.ctrl = ctrl;
         keyobjs->m_lr_key.alt = alt;
         keyobjs->m_lr_key.shift = shift;
-        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift);
+        keyobjs->m_lr_key.win = win;
+        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift, win);
 
     } else if (keyobjid == IDD_RL_SET_BUTTON) {
         keyobjs->m_rl_key.keycode = keycode;
         keyobjs->m_rl_key.ctrl = ctrl;
         keyobjs->m_rl_key.alt = alt;
         keyobjs->m_rl_key.shift = shift;
-        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift);
+        keyobjs->m_rl_key.win = win;
+        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift, win);
 
     } else if (keyobjid == IDD_RM_SET_BUTTON) {
         keyobjs->m_rm_key.keycode = keycode;
         keyobjs->m_rm_key.ctrl = ctrl;
         keyobjs->m_rm_key.alt = alt;
         keyobjs->m_rm_key.shift = shift;
-        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift);
+        keyobjs->m_rm_key.win = win;
+        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift, win);
 
     } else if (keyobjid == IDD_ML_SET_BUTTON) {
         keyobjs->m_ml_key.keycode = keycode;
         keyobjs->m_ml_key.ctrl = ctrl;
         keyobjs->m_ml_key.alt = alt;
         keyobjs->m_ml_key.shift = shift;
-        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift);
+        keyobjs->m_ml_key.win = win;
+        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift, win);
 
     } else if (keyobjid == IDD_MR_SET_BUTTON) {
         keyobjs->m_mr_key.keycode = keycode;
         keyobjs->m_mr_key.ctrl = ctrl;
         keyobjs->m_mr_key.alt = alt;
         keyobjs->m_mr_key.shift = shift;
-        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift);
+        keyobjs->m_mr_key.win = win;
+        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift, win);
     } else if (keyobjid == IDD_LM_SET_BUTTON) {
         keyobjs->m_lm_key.keycode = keycode;
         keyobjs->m_lm_key.ctrl = ctrl;
         keyobjs->m_lm_key.alt = alt;
         keyobjs->m_lm_key.shift = shift;
-        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift);
+        keyobjs->m_lm_key.win = win;
+        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift, win);
     } else if (keyobjid == IDD_LU_SET_BUTTON) {
         keyobjs->m_lu_key.keycode = keycode;
         keyobjs->m_lu_key.ctrl = ctrl;
         keyobjs->m_lu_key.alt = alt;
         keyobjs->m_lu_key.shift = shift;
-        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift);
+        keyobjs->m_lu_key.win = win;
+        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift, win);
     } else if (keyobjid == IDD_LD_SET_BUTTON) {
         keyobjs->m_ld_key.keycode = keycode;
         keyobjs->m_ld_key.ctrl = ctrl;
         keyobjs->m_ld_key.alt = alt;
         keyobjs->m_ld_key.shift = shift;
-        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift);
+        keyobjs->m_ld_key.win = win;
+        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift, win);
 
     } else if (keyobjid == IDD_RU_SET_BUTTON) {
         keyobjs->m_ru_key.keycode = keycode;
         keyobjs->m_ru_key.ctrl = ctrl;
         keyobjs->m_ru_key.alt = alt;
         keyobjs->m_ru_key.shift = shift;
-        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift);
+        keyobjs->m_ru_key.win = win;
+        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift, win);
     } else if (keyobjid == IDD_RD_SET_BUTTON) {
         keyobjs->m_rd_key.keycode = keycode;
         keyobjs->m_rd_key.ctrl = ctrl;
         keyobjs->m_rd_key.alt = alt;
         keyobjs->m_rd_key.shift = shift;
-        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift);
+        keyobjs->m_rd_key.win = win;
+        send_key_option(keyobjid, 0, keycode, ctrl, alt, shift, win);
     }
 }
 void store_key(HWND hDlg)
@@ -667,6 +693,7 @@ void store_key(HWND hDlg)
     HWND ctrlhwnd = GetDlgItem(hDlg, IDD_CTRL_SET_COMBOBOX);
     HWND althwnd = GetDlgItem(hDlg, IDD_ALT_SET_COMBOBOX);
     HWND shifthwnd = GetDlgItem(hDlg, IDD_SHIFT_SET_COMBOBOX);
+    HWND winhwnd = GetDlgItem(hDlg, IDD_WIN_SET_COMBOBOX);
 
     TCHAR keytxt[20];
     GetWindowText(keylisthwnd, keytxt, 20);
@@ -676,6 +703,8 @@ void store_key(HWND hDlg)
     GetWindowText(althwnd, alttxt, 10);
     TCHAR shifttxt[10];
     GetWindowText(shifthwnd, shifttxt, 10);
+    TCHAR wintxt[10];
+    GetWindowText(winhwnd, wintxt, 10);
 
     int regval = 0;
 
@@ -740,7 +769,13 @@ void store_key(HWND hDlg)
         regval += 1;
     }
 
-    set_option_obj(active_button_id, keycode, ctrl, alt, shift);
+    bool win = false;
+    if (_tcslen(wintxt) != 0) {
+        win = true;
+        regval += 2;
+    }
+
+    set_option_obj(active_button_id, keycode, ctrl, alt, shift, win);
     std::wstring regkeystr = std::to_wstring(active_button_id);
     std::wstring regvalstr = std::to_wstring(regval);
     set_regval(HKEY_CURRENT_USER, L"SOFTWARE\\Mouse_Button_Actions_kxkx5150", regkeystr, regvalstr);
@@ -781,6 +816,12 @@ void load_key(int keyobjid)
             bool ctrl = false;
             bool alt = false;
             bool shift = false;
+            bool win = false;
+
+            if (sval >= 1000) {
+                win = true;
+                sval -= 1000;
+            }            
             if (sval >= 100) {
                 ctrl = true;
                 sval -= 100;
@@ -789,10 +830,14 @@ void load_key(int keyobjid)
                 alt = true;
                 sval -= 10;
             }
+            if (sval >= 2) {
+                win = true;
+                sval -= 2;
+            }       
             if (sval >= 1) {
                 shift = true;
             }
-            set_option_obj(keyobjid, keycode, ctrl, alt, shift);
+            set_option_obj(keyobjid, keycode, ctrl, alt, shift, win);
         }
     }
 }

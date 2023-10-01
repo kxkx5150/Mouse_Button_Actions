@@ -5,6 +5,7 @@ struct Key {
     bool ctrl = false;
     bool alt = false;
     bool shift = false;
+    bool win = false;
 };
 
 class Keyobj {
@@ -22,7 +23,7 @@ public:
     {
     }
 
-    void set_key(int index, int keycode, bool ctrl, bool alt, bool shift)
+    void set_key(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
     {
         if (index == 0)
             m_keys.clear();
@@ -34,6 +35,7 @@ public:
         key.ctrl = ctrl;
         key.alt = alt;
         key.shift = shift;
+        key.win = win;
         m_keys.push_back(key);
     }
     void key_down(Key key)
@@ -59,6 +61,11 @@ public:
             ip.ki.dwFlags = 0;
             SendInput(1, &ip, sizeof(INPUT));
         }
+        if (key.win) {
+            ip.ki.wVk = VK_LWIN;
+            ip.ki.dwFlags = 0;
+            SendInput(1, &ip, sizeof(INPUT));
+        }
 
         ip.ki.wVk = key.keycode;
         ip.ki.dwFlags = 0;
@@ -80,6 +87,11 @@ public:
         }
         if (key.shift) {
             ip.ki.wVk = VK_SHIFT;
+            ip.ki.dwFlags = KEYEVENTF_KEYUP;
+            SendInput(1, &ip, sizeof(INPUT));
+        }
+         if (key.win) {
+            ip.ki.wVk = VK_LWIN;
             ip.ki.dwFlags = KEYEVENTF_KEYUP;
             SendInput(1, &ip, sizeof(INPUT));
         }
@@ -182,65 +194,65 @@ public:
         delete m_rdtbutton;
     }
 
-    void set_mouse_left_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+    void set_mouse_left_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
     {
         // m_leftbutton->set_key(index, keycode , ctrl, alt, shift);
     }
-    void set_mouse_middle_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+    void set_mouse_middle_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
     {
-        m_middlebutton->set_key(index, keycode, ctrl, alt, shift);
+        m_middlebutton->set_key(index, keycode, ctrl, alt, shift, win);
     }
-    void set_mouse_right_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+    void set_mouse_right_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
     {
-        m_rightbutton->set_key(index, keycode, ctrl, alt, shift);
+        m_rightbutton->set_key(index, keycode, ctrl, alt, shift, win);
     }
-    void set_mouse_x1_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+    void set_mouse_x1_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
     {
-        m_x1tbutton->set_key(index, keycode, ctrl, alt, shift);
+        m_x1tbutton->set_key(index, keycode, ctrl, alt, shift, win);
     }
-    void set_mouse_x2_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+    void set_mouse_x2_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
     {
-        m_x2tbutton->set_key(index, keycode, ctrl, alt, shift);
+        m_x2tbutton->set_key(index, keycode, ctrl, alt, shift, win);
     }
-    void set_mouse_lr_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+    void set_mouse_lr_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
     {
-        m_lrtbutton->set_key(index, keycode, ctrl, alt, shift);
+        m_lrtbutton->set_key(index, keycode, ctrl, alt, shift, win);
     }
-    void set_mouse_rl_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+    void set_mouse_rl_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
     {
-        m_rltbutton->set_key(index, keycode, ctrl, alt, shift);
+        m_rltbutton->set_key(index, keycode, ctrl, alt, shift, win);
     }
-    void set_mouse_rm_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+    void set_mouse_rm_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
     {
-        m_rmtbutton->set_key(index, keycode, ctrl, alt, shift);
+        m_rmtbutton->set_key(index, keycode, ctrl, alt, shift, win);
     }
-    void set_mouse_ml_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+    void set_mouse_ml_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
     {
-        m_mltbutton->set_key(index, keycode, ctrl, alt, shift);
+        m_mltbutton->set_key(index, keycode, ctrl, alt, shift, win);
     }
-    void set_mouse_mr_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+    void set_mouse_mr_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
     {
-        m_mrtbutton->set_key(index, keycode, ctrl, alt, shift);
+        m_mrtbutton->set_key(index, keycode, ctrl, alt, shift, win);
     }
-    void set_mouse_lm_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+    void set_mouse_lm_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
     {
-        m_lmtbutton->set_key(index, keycode, ctrl, alt, shift);
+        m_lmtbutton->set_key(index, keycode, ctrl, alt, shift, win);
     }
-    void set_mouse_lu_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+    void set_mouse_lu_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
     {
-        m_lutbutton->set_key(index, keycode, ctrl, alt, shift);
+        m_lutbutton->set_key(index, keycode, ctrl, alt, shift, win);
     }
-    void set_mouse_ld_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+    void set_mouse_ld_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
     {
-        m_ldtbutton->set_key(index, keycode, ctrl, alt, shift);
+        m_ldtbutton->set_key(index, keycode, ctrl, alt, shift, win);
     }
-    void set_mouse_ru_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+    void set_mouse_ru_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
     {
-        m_rutbutton->set_key(index, keycode, ctrl, alt, shift);
+        m_rutbutton->set_key(index, keycode, ctrl, alt, shift, win);
     }
-    void set_mouse_rd_button(int index, int keycode, bool ctrl, bool alt, bool shift)
+    void set_mouse_rd_button(int index, int keycode, bool ctrl, bool alt, bool shift, bool win)
     {
-        m_rdtbutton->set_key(index, keycode, ctrl, alt, shift);
+        m_rdtbutton->set_key(index, keycode, ctrl, alt, shift, win);
     }
 
     Keyobj* get_mouse_left_button()
